@@ -19,4 +19,8 @@ export class AuthService {
       access_token: this.jwtService.sign(payload),
     };
   }
+
+  async updatePassword(user: IUserInfo) {
+    console.log(`Update password of user ${user.username}`);
+  }
 }
