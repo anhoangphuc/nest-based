@@ -43,6 +43,6 @@ describe(`AuthService`, () => {
   it(`User login`, async () => {
     const res = await service.login({ username: 'hoangphucnb97@gmail.com' });
     expect(res).toBeDefined();
-    expect(res.access_token).toBeDefined();
+    expect(res.accessToken).toBeDefined();
   });
 });
