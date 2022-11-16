@@ -24,5 +24,7 @@ describe('AppController (e2e)', () => {
       .post('/auth/login')
       .send({ username: 'hoangphucnb97@gmail.com', password: '1' })
       .expect(201);
+
+    expect(loginRes.body.accessToken).toBeDefined();
   });
 });
