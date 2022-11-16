@@ -8,12 +8,12 @@ import { UserUnauthorizedException } from '../../../shares/exceptions/auth.excep
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly authService: AuthService) {
-    super({ usernameField: 'email' });
+    super();
   }
 
   async validate(username: string, password: string): Promise<IUserInfo> {
     const user = await this.authService.validateUserWithUsernameAndPassword(username, password);
-    if (!user) throw new UserUnauthorizedException(`Email and password not correct`);
+    if (!user) throw new UserUnauthorizedException(`Username and password not correct`);
     return user;
   }
 }
