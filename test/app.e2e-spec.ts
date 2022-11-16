@@ -16,9 +16,20 @@ describe('AppController (e2e)', () => {
   });
 
   it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
+    return request(app.getHttpServer()).get('/').expect(200).expect('Hello World!');
+  });
+
+  it('Should get an JWT access token after login successfully', async () => {
+    const loginRes = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ username: 'hoangphucnb97@gmail.com', password: '1' })
+      .expect(201);
+
+    expect(loginRes.body.accessToken).toBeDefined();
+
+    await request(app.getHttpServer())
+      .post('/auth/update-password')
+      .set('Authorization', `Bearer ${loginRes.body.accessToken}`)
+      .expect(201);
   });
 });
