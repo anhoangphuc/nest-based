@@ -26,5 +26,10 @@ describe('AppController (e2e)', () => {
       .expect(201);
 
     expect(loginRes.body.accessToken).toBeDefined();
+
+    await request(app.getHttpServer())
+      .post('/auth/update-password')
+      .set('Authorization', `Bearer ${loginRes.body.accessToken}`)
+      .expect(201);
   });
 });
