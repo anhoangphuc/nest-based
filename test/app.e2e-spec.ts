@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
+import { sleep } from '../src/shares/helpers/utils';
+import { JwtExpireTime } from '../src/shares/constants/auth.constant';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -32,4 +34,20 @@ describe('AppController (e2e)', () => {
       .set('Authorization', `Bearer ${loginRes.body.accessToken}`)
       .expect(201);
   });
+
+  it(
+    `Should unauthorized when token expired`,
+    async () => {
+      const loginRes = await request(app.getHttpServer())
+        .post('/auth/login')
+        .send({ username: 'hoangphucnb97@gmail.com', password: '1' });
+
+      await sleep(JwtExpireTime * 1000);
+      await request(app.getHttpServer())
+        .post('/auth/update-password')
+        .set('Authorization', `Bearer ${loginRes.body.accessToken}`)
+        .expect(401);
+    },
+    (JwtExpireTime + 1) * 1000,
+  );
 });
