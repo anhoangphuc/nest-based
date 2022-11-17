@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { IUserInfo } from './user-info.interface';
-import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()

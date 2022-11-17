@@ -1,0 +1,8 @@
+{
+  "auth": {
+    "jwt": {
+      "secretKey": "123456",
+      "expireTime": 10
+    }
+  }
+}
