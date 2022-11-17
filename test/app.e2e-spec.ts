@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { AppModule } from './../src/app.module';
 import { sleep } from '../src/shares/helpers/utils';
 import { JwtExpireTime } from '../src/shares/constants/auth.constant';
