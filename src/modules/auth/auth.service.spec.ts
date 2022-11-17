@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtModule } from '@nestjs/jwt';
-import { JwtExpireTime, JwtSecretKey } from '../../shares/constants/auth.constant';
+import { ConfigService } from '../config/config.service';
 
 describe(`AuthService`, () => {
   let service: AuthService;
@@ -11,11 +11,14 @@ describe(`AuthService`, () => {
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
-        JwtModule.register({
-          secret: JwtSecretKey,
-          signOptions: {
-            expiresIn: JwtExpireTime,
-          },
+        JwtModule.registerAsync({
+          useFactory: async (configService: ConfigService) => ({
+            secret: configService.getAuthConfiguration().jwt.secretKey,
+            signOptions: {
+              expiresIn: configService.getAuthConfiguration().jwt.expireTime,
+            },
+          }),
+          inject: [ConfigService],
         }),
       ],
       providers: [AuthService, LocalStrategy, JwtStrategy],
