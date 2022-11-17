@@ -1,3 +1,3 @@
 export interface IConfigOption {
-  folder: 'string';
+  folder: string;
 }
