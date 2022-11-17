@@ -1,5 +1,5 @@
-import { IAuth } from './auth.interface';
+import { IAuthConfiguration } from './auth-configuration.interface';
 
 export interface IConfiguration {
-  auth: IAuth;
+  auth: IAuthConfiguration;
 }
