@@ -4,6 +4,7 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '../config/config.service';
+import { ConfigModule } from '../config/config.module';
 
 describe(`AuthService`, () => {
   let service: AuthService;
@@ -11,6 +12,7 @@ describe(`AuthService`, () => {
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
+        ConfigModule.register({ folder: './configuration' }),
         JwtModule.registerAsync({
           useFactory: async (configService: ConfigService) => ({
             secret: configService.getAuthConfiguration().jwt.secretKey,
