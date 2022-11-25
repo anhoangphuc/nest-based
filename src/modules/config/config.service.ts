@@ -22,4 +22,8 @@ export class ConfigService {
   getAuthConfiguration(): IAuthConfiguration {
     return this.configuration.auth;
   }
+
+  getEnvironment(): string {
+    return process.env.APP_ENV;
+  }
 }
