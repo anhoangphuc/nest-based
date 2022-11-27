@@ -6,6 +6,8 @@ import dotenv from 'dotenv';
 import { IAuthConfiguration } from '../../shares/interfaces/config/auth-configuration.interface';
 import path from 'path';
 import fs from 'fs';
+import { isNullOrUndefined } from '../../shares/helpers/utils';
+import { RequiredConfigurationNotFoundError } from '../../shares/exceptions/config.exception';
 dotenv.config();
 
 @Injectable()
@@ -21,6 +23,19 @@ export class ConfigService {
 
   getAuthConfiguration(): IAuthConfiguration {
     return this.configuration.auth;
+  }
+
+  getMongoUri(): string {
+    // If mongodb uri is provided, use it
+    const mongodbConfig = this.configuration.mongodb;
+    if (!isNullOrUndefined(mongodbConfig.uri)) {
+      return this.configuration.mongodb.uri;
+    }
+
+    // Else, calculate it
+    if ([mongodbConfig.host, mongodbConfig.port, mongodbConfig.database].some((x) => isNullOrUndefined(x))) {
+      throw new RequiredConfigurationNotFoundError(['host', 'port', 'database']);
+    }
   }
 
   getEnvironment(): string {

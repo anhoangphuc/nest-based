@@ -5,5 +5,5 @@ export interface IMongoConfiguration {
   username: string;
   password: string;
   replset: number;
-  url: string;
+  uri: string;
 }
