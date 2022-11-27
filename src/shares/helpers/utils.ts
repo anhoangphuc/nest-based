@@ -14,3 +14,7 @@ export function getRandomValue(vMin: number, vMax: number) {
 export function isNullOrUndefined(value) {
   return value === null || value === undefined;
 }
+
+export function isSomeValueNullOrUndefined(values: any[]) {
+  return values.some((value) => isNullOrUndefined(value));
+}

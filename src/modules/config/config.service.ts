@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 import { IAuthConfiguration } from '../../shares/interfaces/config/auth-configuration.interface';
 import path from 'path';
 import fs from 'fs';
-import { isNullOrUndefined } from '../../shares/helpers/utils';
+import { isNullOrUndefined, isSomeValueNullOrUndefined } from '../../shares/helpers/utils';
 import { RequiredConfigurationNotFoundError } from '../../shares/exceptions/config.exception';
 import { IMongoConfiguration } from '../../shares/interfaces/config/mongodb-configuration.interface';
 dotenv.config();
@@ -38,15 +38,15 @@ export class ConfigService {
     }
 
     // Else, calculate it
-    if ([mongodbConfig.host, mongodbConfig.port, mongodbConfig.database].some((x) => isNullOrUndefined(x))) {
+    if (isSomeValueNullOrUndefined([mongodbConfig.host, mongodbConfig.port, mongodbConfig.database])) {
       throw new RequiredConfigurationNotFoundError(['host', 'port', 'database']);
     }
     let uri = 'mongodb://';
-    if (!isNullOrUndefined([mongodbConfig.username, mongodbConfig.password])) {
+    if (!isSomeValueNullOrUndefined([mongodbConfig.username, mongodbConfig.password])) {
       uri = uri + `${mongodbConfig.username}:${mongodbConfig.password}@`;
     }
     uri = uri + `${mongodbConfig.host}:${mongodbConfig.port}/${mongodbConfig.database}?`;
-    if (!isNullOrUndefined([mongodbConfig.replset])) {
+    if (!isSomeValueNullOrUndefined([mongodbConfig.replset])) {
       uri = uri + `authSource=admin&replicaSet=${mongodbConfig.replset}&retryWrites=true&w=majority`;
     }
     this.configuration.mongodb.uri = uri;

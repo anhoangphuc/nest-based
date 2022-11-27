@@ -62,7 +62,6 @@ describe(`Config service`, () => {
     it(`Throw error when one of required value not provided`, () => {
       const requiredField = ['host', 'port', 'database'][getRandomValue(0, 3)];
       mongoConfig[requiredField] = null;
-      console.log(mongoConfig);
       expect(() => service.getMongoUri()).toThrowError(RequiredConfigurationNotFoundError);
     });
   });
