@@ -7,6 +7,8 @@ import { options } from 'tsconfig-paths/lib/options';
 import { IConfiguration } from '../../shares/interfaces/config/configuration.interface';
 import fs from 'fs';
 import { IMongoConfiguration } from '../../shares/interfaces/config/mongodb-configuration.interface';
+import { getRandomValue } from '../../shares/helpers/utils';
+import { RequiredConfigurationNotFoundError } from '../../shares/exceptions/config.exception';
 
 describe(`Config service`, () => {
   let service: ConfigService;
@@ -55,6 +57,13 @@ describe(`Config service`, () => {
       const testUri = `uri-test`;
       mongoConfig.uri = testUri;
       expect(service.getMongoUri()).toEqual(testUri);
+    });
+
+    it(`Throw error when one of required value not provided`, () => {
+      const requiredField = ['host', 'port', 'database'][getRandomValue(0, 3)];
+      mongoConfig[requiredField] = null;
+      console.log(mongoConfig);
+      expect(() => service.getMongoUri()).toThrowError(RequiredConfigurationNotFoundError);
     });
   });
 });
