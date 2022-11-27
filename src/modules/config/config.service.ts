@@ -36,6 +36,16 @@ export class ConfigService {
     if ([mongodbConfig.host, mongodbConfig.port, mongodbConfig.database].some((x) => isNullOrUndefined(x))) {
       throw new RequiredConfigurationNotFoundError(['host', 'port', 'database']);
     }
+    let uri = 'mongodb://';
+    if (!isNullOrUndefined([mongodbConfig.username, mongodbConfig.password])) {
+      uri = uri + `${mongodbConfig.username}:${mongodbConfig.password}@`;
+    }
+    uri = uri + `${mongodbConfig.host}:${mongodbConfig.port}/${mongodbConfig.database}?`;
+    if (!isNullOrUndefined([mongodbConfig.replset])) {
+      uri = uri + `authSource=admin&replicaSet=${mongodbConfig.replset}&retryWrites=true&w=majority`;
+    }
+    this.configuration.mongodb.uri = uri;
+    return uri;
   }
 
   getEnvironment(): string {
