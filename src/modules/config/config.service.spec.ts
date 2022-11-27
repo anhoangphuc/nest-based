@@ -6,6 +6,7 @@ import path from 'path';
 import { options } from 'tsconfig-paths/lib/options';
 import { IConfiguration } from '../../shares/interfaces/config/configuration.interface';
 import fs from 'fs';
+import { IMongoConfiguration } from '../../shares/interfaces/config/mongodb-configuration.interface';
 
 describe(`Config service`, () => {
   let service: ConfigService;
@@ -41,6 +42,19 @@ describe(`Config service`, () => {
 
     it(`Test auth`, () => {
       expect(service.getAuthConfiguration().jwt.secretKey).toEqual(configuration['auth']['jwt']['secretKey']);
+    });
+  });
+
+  describe(`Test calculating mongoURI`, () => {
+    let mongoConfig: IMongoConfiguration;
+    beforeEach(() => {
+      mongoConfig = service.getMongoConfiguration();
+    });
+
+    it(`Update configuration in mem success`, () => {
+      const testUri = `uri-test`;
+      mongoConfig.uri = testUri;
+      expect(service.getMongoUri()).toEqual(testUri);
     });
   });
 });
