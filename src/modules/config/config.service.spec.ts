@@ -48,9 +48,12 @@ describe(`Config service`, () => {
   });
 
   describe(`Test calculating mongoURI`, () => {
+    let configuration: IConfiguration;
     let mongoConfig: IMongoConfiguration;
     beforeEach(() => {
       mongoConfig = service.getMongoConfiguration();
+      const envFilePath = path.resolve(__dirname, option.folder, `${service.getEnvironment()}.json`);
+      configuration = JSON.parse(fs.readFileSync(envFilePath, 'utf-8'));
     });
 
     it(`Update configuration in mem success`, () => {
@@ -63,6 +66,26 @@ describe(`Config service`, () => {
       const requiredField = ['host', 'port', 'database'][getRandomValue(0, 3)];
       mongoConfig[requiredField] = null;
       expect(() => service.getMongoUri()).toThrowError(RequiredConfigurationNotFoundError);
+    });
+
+    it(`Construct uri when no username and password`, () => {
+      expect(service.getMongoUri()).toEqual(
+        `mongodb://${configuration['mongodb']['host']}:${configuration['mongodb']['port']}/${configuration['mongodb']['database']}?`,
+      );
+      const username = 'username';
+      const password = 'pass';
+      mongoConfig.username = username;
+      mongoConfig.password = password;
+    });
+
+    it(`Construct uri when have username and password`, () => {
+      const username = 'username';
+      const password = 'pass';
+      mongoConfig.username = username;
+      mongoConfig.password = password;
+      expect(service.getMongoUri()).toEqual(
+        `mongodb://${username}:${password}@${configuration['mongodb']['host']}:${configuration['mongodb']['port']}/${configuration['mongodb']['database']}?`,
+      );
     });
   });
 });
