@@ -8,6 +8,7 @@ import path from 'path';
 import fs from 'fs';
 import { isNullOrUndefined } from '../../shares/helpers/utils';
 import { RequiredConfigurationNotFoundError } from '../../shares/exceptions/config.exception';
+import { IMongoConfiguration } from '../../shares/interfaces/config/mongodb-configuration.interface';
 dotenv.config();
 
 @Injectable()
@@ -23,6 +24,10 @@ export class ConfigService {
 
   getAuthConfiguration(): IAuthConfiguration {
     return this.configuration.auth;
+  }
+
+  getMongoConfiguration(): IMongoConfiguration {
+    return this.configuration.mongodb;
   }
 
   getMongoUri(): string {
