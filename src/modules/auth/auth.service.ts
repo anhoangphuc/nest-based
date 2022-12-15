@@ -1,15 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { IUserInfo } from './user-info.interface';
 import { JwtService } from '@nestjs/jwt';
+import { UsersService } from '../users/users.service';
+import { UsersDocument } from '../users/schema/users.schema';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly jwtService: JwtService) {}
-  async validateUserWithUsernameAndPassword(email: string, password: string): Promise<IUserInfo> {
-    if (email === 'hoangphucnb97@gmail.com' && password === '1') {
-      return { email };
-    }
-    return null;
+  constructor(private readonly jwtService: JwtService, private readonly usersService: UsersService) {}
+  async validateUserWithEmailAndPassword(email: string, password: string): Promise<UsersDocument> {
+    return await this.usersService.getUserWithEmailAndPassword(email, password);
   }
 
   async login(user: IUserInfo) {

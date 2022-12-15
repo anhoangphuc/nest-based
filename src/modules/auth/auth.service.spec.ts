@@ -35,12 +35,12 @@ describe(`AuthService`, () => {
 
   describe(`validate user`, () => {
     it(`Login success`, async () => {
-      const res = await service.validateUserWithUsernameAndPassword('hoangphucnb97@gmail.com', '1');
+      const res = await service.validateUserWithEmailAndPassword('hoangphucnb97@gmail.com', '1');
       expect(res.email === 'hoangphucnb97@gmail.com');
     });
 
     it(`Login with not correct user`, async () => {
-      const res = await service.validateUserWithUsernameAndPassword(`hoangphucnb97@gmail.com`, '2');
+      const res = await service.validateUserWithEmailAndPassword(`hoangphucnb97@gmail.com`, '2');
       expect(res).toBeNull();
     });
   });

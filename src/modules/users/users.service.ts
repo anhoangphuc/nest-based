@@ -4,7 +4,11 @@ import { Users, UsersDocument } from './schema/users.schema';
 import { ClientSession, Model } from 'mongoose';
 import { CreateNewUserRequestDto } from './dto/create-new-user.request.dto';
 import { withTransaction } from '../../shares/helpers/transaction';
-import { hashString } from '../../shares/helpers/cryptography';
+import { hashString, isHashEqual } from '../../shares/helpers/cryptography';
+import { IUsersSearch } from '../../shares/interfaces/users-search.interface';
+import { isNullOrUndefined, isSomeValueNullOrUndefined } from '../../shares/helpers/utils';
+import { use } from 'passport';
+import { ListUserNotFoundException, UserNotFoundException } from '../../shares/exceptions/users.exception';
 
 @Injectable()
 export class UsersService {
@@ -27,7 +31,26 @@ export class UsersService {
     }
   }
 
-  async getListOfUsers(session: ClientSession): Promise<UsersDocument[]> {
-    return this.usersModel.find({});
+  async getListOfUsers(option: IUsersSearch, session: ClientSession, throwException = false): Promise<UsersDocument[]> {
+    const users = await this.usersModel.find(
+      {
+        email: isNullOrUndefined(option.email) ? {} : { $in: option.email },
+      },
+      {},
+      { session },
+    );
+    if (users.length === 0 && throwException === true) {
+      throw new ListUserNotFoundException(option);
+    }
+    return users;
+  }
+
+  async getUserWithEmailAndPassword(email: string, password: string, throwException = false) {
+    const users = await this.getListOfUsers({ email: [email] }, null);
+    const usersMatchedPass = users.filter((user) => isHashEqual(password, user.password));
+    if (usersMatchedPass.length === 0 && throwException === true) {
+      throw new UserNotFoundException({ email, password });
+    }
+    return isNullOrUndefined(usersMatchedPass) ? null : usersMatchedPass[0];
   }
 }
