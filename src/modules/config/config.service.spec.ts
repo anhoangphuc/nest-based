@@ -3,7 +3,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CONFIG_OPTIONS } from '../../shares/constants/constant';
 import { IConfigOption } from '../../shares/interfaces/config/config-option.interface';
 import path from 'path';
-import { options } from 'tsconfig-paths/lib/options';
 import { IConfiguration } from '../../shares/interfaces/config/configuration.interface';
 import fs from 'fs';
 import { IMongoConfiguration } from '../../shares/interfaces/config/mongodb-configuration.interface';

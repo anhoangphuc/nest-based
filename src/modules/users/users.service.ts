@@ -24,4 +24,8 @@ export class UsersService {
       throw error;
     }
   }
+
+  async getListOfUsers(session: ClientSession): Promise<UsersDocument[]> {
+    return this.usersModel.find({});
+  }
 }

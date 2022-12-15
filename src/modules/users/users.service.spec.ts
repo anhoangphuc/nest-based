@@ -25,4 +25,11 @@ describe('UsersService', () => {
     expect(newUser.email).toEqual(createUserRequest.email);
     expect(newUser.password).toEqual(createUserRequest.password);
   });
+
+  it(`Throw exception when two user get the same email`, async () => {
+    const createUserRequest1: CreateNewUserRequestDto = { email: 'hoangphucnb97@gmail.com', password: '1' };
+    const createUserRequest2: CreateNewUserRequestDto = { email: 'hoangphucnb97@gmail.com', password: '2' };
+    await service.addNewUserWithNewTransaction(createUserRequest1);
+    await expect(async () => await service.addNewUserWithNewTransaction(createUserRequest2)).rejects.toThrowError();
+  });
 });
