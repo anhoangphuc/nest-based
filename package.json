@@ -29,6 +29,7 @@
     "@nestjs/platform-express": "^8.0.0",
     "@types/passport-jwt": "^3.0.7",
     "@types/passport-local": "^1.0.34",
+    "bcryptjs": "^2.4.3",
     "class-transformer": "^0.5.1",
     "dotenv": "^16.0.3",
     "mongoose": "^6.7.3",
