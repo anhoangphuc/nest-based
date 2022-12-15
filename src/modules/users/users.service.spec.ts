@@ -4,6 +4,7 @@ import { rootMongooseTestModule } from '../../shares/helpers/setup-test';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Users, UsersSchema } from './schema/users.schema';
 import { CreateNewUserRequestDto } from './dto/create-new-user.request.dto';
+import { hashString, isHashEqual } from '../../shares/helpers/cryptography';
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -23,7 +24,7 @@ describe('UsersService', () => {
     const createUserRequest: CreateNewUserRequestDto = { email: 'hoangphucnb97@gmail.com', password: '1' };
     const newUser = await service.addNewUserWithNewTransaction(createUserRequest);
     expect(newUser.email).toEqual(createUserRequest.email);
-    expect(newUser.password).toEqual(createUserRequest.password);
+    expect(isHashEqual('1', newUser.password));
   });
 
   it(`Throw exception when two user get the same email`, async () => {
