@@ -16,7 +16,7 @@ export class UsersService {
 
   async addNewUserWithNewTransaction(createNewUserRequest: CreateNewUserRequestDto): Promise<UsersDocument> {
     try {
-      return withTransaction(this.usersModel.db, async (session) => {
+      return await withTransaction(this.usersModel.db, async (session) => {
         return await this.addNewUser(createNewUserRequest, session);
       });
     } catch (error) {
