@@ -36,7 +36,7 @@ describe(`AuthService`, () => {
   describe(`validate user`, () => {
     it(`Login success`, async () => {
       const res = await service.validateUserWithUsernameAndPassword('hoangphucnb97@gmail.com', '1');
-      expect(res.username === 'hoangphucnb97@gmail.com');
+      expect(res.email === 'hoangphucnb97@gmail.com');
     });
 
     it(`Login with not correct user`, async () => {
@@ -46,7 +46,7 @@ describe(`AuthService`, () => {
   });
 
   it(`User login`, async () => {
-    const res = await service.login({ username: 'hoangphucnb97@gmail.com' });
+    const res = await service.login({ email: 'hoangphucnb97@gmail.com' });
     expect(res).toBeDefined();
     expect(res.accessToken).toBeDefined();
   });
