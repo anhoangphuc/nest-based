@@ -21,6 +21,11 @@ describe('AppController (e2e)', () => {
   });
 
   it('Should get an JWT access token after login successfully', async () => {
+    await request(app.getHttpServer())
+      .post('/auth/register')
+      .send({ email: 'hoangphucnb97@gmail.com', password: '1' })
+      .expect(201);
+
     const loginRes = await request(app.getHttpServer())
       .post('/auth/login')
       .send({ email: 'hoangphucnb97@gmail.com', password: '1' })
