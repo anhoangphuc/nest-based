@@ -5,13 +5,26 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '../config/config.service';
 import { ConfigModule } from '../config/config.module';
+import { UsersModule } from '../users/users.module';
+import { rootMongooseTestModule } from '../../shares/helpers/setup-test';
+import { UsersService } from '../users/users.service';
+import { MongooseModule } from '@nestjs/mongoose';
+import { Users, UsersSchema } from '../users/schema/users.schema';
+import { DynamicModule } from '@nestjs/common';
 
 describe(`AuthService`, () => {
   let service: AuthService;
+  const UsersModuleTest: DynamicModule = {
+    module: UsersModule,
+    imports: [rootMongooseTestModule(), MongooseModule.forFeature([{ name: Users.name, schema: UsersSchema }])],
+    providers: [UsersService],
+    exports: [UsersService],
+  };
 
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
+        rootMongooseTestModule(),
         ConfigModule.register({ folder: './configuration' }),
         JwtModule.registerAsync({
           useFactory: async (configService: ConfigService) => ({
@@ -22,6 +35,7 @@ describe(`AuthService`, () => {
           }),
           inject: [ConfigService],
         }),
+        UsersModuleTest,
       ],
       providers: [AuthService, LocalStrategy, JwtStrategy],
     }).compile();

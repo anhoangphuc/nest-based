@@ -51,6 +51,6 @@ export class UsersService {
     if (usersMatchedPass.length === 0 && throwException === true) {
       throw new UserNotFoundException({ email, password });
     }
-    return isNullOrUndefined(usersMatchedPass) ? null : usersMatchedPass[0];
+    return usersMatchedPass.length === 0 ? null : usersMatchedPass[0];
   }
 }
