@@ -21,9 +21,14 @@ describe('AppController (e2e)', () => {
   });
 
   it('Should get an JWT access token after login successfully', async () => {
+    await request(app.getHttpServer())
+      .post('/auth/register')
+      .send({ email: 'hoangphucnb97@gmail.com', password: '1' })
+      .expect(201);
+
     const loginRes = await request(app.getHttpServer())
       .post('/auth/login')
-      .send({ username: 'hoangphucnb97@gmail.com', password: '1' })
+      .send({ email: 'hoangphucnb97@gmail.com', password: '1' })
       .expect(201);
 
     expect(loginRes.body.accessToken).toBeDefined();
@@ -39,7 +44,7 @@ describe('AppController (e2e)', () => {
     async () => {
       const loginRes = await request(app.getHttpServer())
         .post('/auth/login')
-        .send({ username: 'hoangphucnb97@gmail.com', password: '1' });
+        .send({ email: 'hoangphucnb97@gmail.com', password: '1' });
 
       await sleep(2 * 1000);
       await request(app.getHttpServer())

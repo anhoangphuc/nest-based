@@ -5,10 +5,16 @@ import { AuthService } from './auth.service';
 import { plainToInstance } from 'class-transformer';
 import { LocalAuthGuard } from '../../shares/guards/local-auth.guard';
 import { JwtAuthGuard } from '../../shares/guards/jwt-auth.guard';
+import { RegisterRequestDto } from './dto/register-request.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  @Post('register')
+  async register(@Body() registerRequest: RegisterRequestDto) {
+    return await this.authService.register(registerRequest);
+  }
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Request() request, @Body() loginRequest: LoginRequestDto): Promise<LoginResponseDto> {
