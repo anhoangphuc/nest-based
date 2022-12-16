@@ -49,6 +49,7 @@ describe(`AuthService`, () => {
 
   describe(`validate user`, () => {
     it(`Login success`, async () => {
+      await service.register({ email: 'hoangphucnb97@gmail.com', password: '1' });
       const res = await service.validateUserWithEmailAndPassword('hoangphucnb97@gmail.com', '1');
       expect(res.email === 'hoangphucnb97@gmail.com');
     });

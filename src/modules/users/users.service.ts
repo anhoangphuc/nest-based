@@ -2,28 +2,27 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Users, UsersDocument } from './schema/users.schema';
 import { ClientSession, Model } from 'mongoose';
-import { CreateNewUserRequestDto } from './dto/create-new-user.request.dto';
 import { withTransaction } from '../../shares/helpers/transaction';
 import { hashString, isHashEqual } from '../../shares/helpers/cryptography';
 import { IUsersSearch } from '../../shares/interfaces/users-search.interface';
-import { isNullOrUndefined, isSomeValueNullOrUndefined } from '../../shares/helpers/utils';
-import { use } from 'passport';
+import { isNullOrUndefined } from '../../shares/helpers/utils';
 import { ListUserNotFoundException, UserNotFoundException } from '../../shares/exceptions/users.exception';
+import { RegisterRequestDto } from '../auth/dto/register-request.dto';
 
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(Users.name) private usersModel: Model<UsersDocument>) {}
 
-  async addNewUser(createNewUserRequest: CreateNewUserRequestDto, session: ClientSession): Promise<UsersDocument> {
-    createNewUserRequest.password = await hashString(createNewUserRequest.password);
-    const res = await this.usersModel.create([createNewUserRequest], { session });
+  async addNewUser(registerRequestDto: RegisterRequestDto, session: ClientSession): Promise<UsersDocument> {
+    registerRequestDto.password = await hashString(registerRequestDto.password);
+    const res = await this.usersModel.create([registerRequestDto], { session });
     return res[0];
   }
 
-  async addNewUserWithNewTransaction(createNewUserRequest: CreateNewUserRequestDto): Promise<UsersDocument> {
+  async addNewUserWithNewTransaction(registerRequest: RegisterRequestDto): Promise<UsersDocument> {
     try {
       return await withTransaction(this.usersModel.db, async (session) => {
-        return await this.addNewUser(createNewUserRequest, session);
+        return await this.addNewUser(registerRequest, session);
       });
     } catch (error) {
       console.error('Add new user error', error);

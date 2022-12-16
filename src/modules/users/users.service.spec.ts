@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { rootMongooseTestModule } from '../../shares/helpers/setup-test';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Users, UsersSchema } from './schema/users.schema';
-import { CreateNewUserRequestDto } from './dto/create-new-user.request.dto';
+import { RegisterRequestDto } from './dto/create-new-user.request.dto';
 import { hashString, isHashEqual } from '../../shares/helpers/cryptography';
 
 describe('UsersService', () => {
@@ -21,15 +21,15 @@ describe('UsersService', () => {
   });
 
   it(`Add new user success`, async () => {
-    const createUserRequest: CreateNewUserRequestDto = { email: 'hoangphucnb97@gmail.com', password: '1' };
+    const createUserRequest: RegisterRequestDto = { email: 'hoangphucnb97@gmail.com', password: '1' };
     const newUser = await service.addNewUserWithNewTransaction(createUserRequest);
     expect(newUser.email).toEqual(createUserRequest.email);
     expect(isHashEqual('1', newUser.password));
   });
 
   it(`Throw exception when two user get the same email`, async () => {
-    const createUserRequest1: CreateNewUserRequestDto = { email: 'hoangphucnb97@gmail.com', password: '1' };
-    const createUserRequest2: CreateNewUserRequestDto = { email: 'hoangphucnb97@gmail.com', password: '2' };
+    const createUserRequest1: RegisterRequestDto = { email: 'hoangphucnb97@gmail.com', password: '1' };
+    const createUserRequest2: RegisterRequestDto = { email: 'hoangphucnb97@gmail.com', password: '2' };
     await service.addNewUserWithNewTransaction(createUserRequest1);
     await expect(async () => await service.addNewUserWithNewTransaction(createUserRequest2)).rejects.toThrowError();
   });

@@ -1,7 +1,7 @@
 import { Exclude, Expose } from 'class-transformer';
 
 @Exclude()
-export class CreateNewUserRequestDto {
+export class RegisterRequestDto {
   @Expose()
   email: string;
 
