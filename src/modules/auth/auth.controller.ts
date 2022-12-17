@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, HttpStatus, Post, Request, UseGuards } from '@nestjs/common';
 import { LoginRequestDto } from './dto/login-request.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
 import { AuthService } from './auth.service';
@@ -6,7 +6,7 @@ import { plainToInstance } from 'class-transformer';
 import { LocalAuthGuard } from '../../shares/guards/local-auth.guard';
 import { JwtAuthGuard } from '../../shares/guards/jwt-auth.guard';
 import { RegisterRequestDto } from './dto/register-request.dto';
-import { ApiBody, ApiOperation } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
@@ -24,8 +24,22 @@ export class AuthController {
   async register(@Body() registerRequest: RegisterRequestDto) {
     return await this.authService.register(registerRequest);
   }
+
   @UseGuards(LocalAuthGuard)
   @Post('login')
+  @ApiOperation({
+    operationId: 'user-login',
+    description: 'User login with email and password, received login token',
+    summary: 'User login with email and password, received login token',
+  })
+  @ApiBody({
+    type: LoginRequestDto,
+  })
+  @ApiResponse({
+    type: LoginResponseDto,
+    status: HttpStatus.OK,
+    description: 'Successful',
+  })
   async login(@Request() request, @Body() loginRequest: LoginRequestDto): Promise<LoginResponseDto> {
     const { user } = request;
     const res = await this.authService.login(user);
