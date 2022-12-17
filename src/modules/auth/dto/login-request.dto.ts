@@ -9,7 +9,7 @@ export class LoginRequestDto {
     description: 'Email of user',
     example: 'john@email.com',
   })
-  username: string;
+  email: string;
   @ApiProperty({
     type: String,
     description: 'Password of user',

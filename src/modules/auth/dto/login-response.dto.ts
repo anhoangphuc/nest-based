@@ -7,7 +7,7 @@ export class LoginResponseDto {
   @ApiProperty({
     type: String,
     description: 'Access token',
-    example: '',
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImhvYW5',
   })
   accessToken: string;
 }
