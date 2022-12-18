@@ -4,10 +4,15 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { UsersDocument } from '../users/schema/users.schema';
 import { RegisterRequestDto } from './dto/register-request.dto';
+import { ConfigService } from '../config/config.service';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly jwtService: JwtService, private readonly usersService: UsersService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly usersService: UsersService,
+    private readonly configService: ConfigService,
+  ) {}
   async validateUserWithEmailAndPassword(email: string, password: string): Promise<UsersDocument> {
     return await this.usersService.getUserWithEmailAndPassword(email, password);
   }
@@ -23,7 +28,10 @@ export class AuthService {
     await this.usersService.addNewUser(registerRequest, null);
     const payload = { email: registerRequest.email };
     return {
-      verifyToken: this.jwtService.sign(payload),
+      verifyToken: this.jwtService.sign(payload, {
+        secret: this.configService.getAuthConfiguration().verifyToken.secretKey,
+        expiresIn: this.configService.getAuthConfiguration().verifyToken.expireTime,
+      }),
     };
   }
 
