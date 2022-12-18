@@ -28,7 +28,7 @@ export class UsersService {
       { password: registerRequestDto.password },
       { session, upsert: true, new: true },
     );
-    return res[0];
+    return res;
   }
 
   async addNewUserWithNewTransaction(registerRequest: RegisterRequestDto): Promise<UsersDocument> {

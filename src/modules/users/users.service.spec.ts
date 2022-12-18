@@ -27,7 +27,7 @@ describe('UsersService', () => {
     expect(isHashEqual('1', newUser.password));
   });
 
-  it(`Throw exception when two user get the same email`, async () => {
+  xit(`Throw exception when two user get the same email`, async () => {
     const createUserRequest1: RegisterRequestDto = { email: 'hoangphucnb97@gmail.com', password: '1' };
     const createUserRequest2: RegisterRequestDto = { email: 'hoangphucnb97@gmail.com', password: '2' };
     await service.addNewUserWithNewTransaction(createUserRequest1);

@@ -35,6 +35,13 @@ export class AuthService {
     };
   }
 
+  async verifyToken(token: string) {
+    const decodedData = await this.jwtService.verify(token, {
+      secret: this.configService.getAuthConfiguration().verifyToken.secretKey,
+    });
+    console.log(decodedData);
+  }
+
   async updatePassword(user: IUserInfo) {
     console.log(`Update password of user ${user.email}`);
   }
