@@ -1,7 +1,9 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '../../config/config.service';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class VerifyTokenStrategy extends PassportStrategy(Strategy, 'verify-token') {
   constructor(private readonly configService: ConfigService) {
     super({
