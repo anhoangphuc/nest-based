@@ -21,6 +21,10 @@ export class AuthService {
 
   async register(registerRequest: RegisterRequestDto) {
     await this.usersService.addNewUser(registerRequest, null);
+    const payload = { email: registerRequest.email };
+    return {
+      verifyToken: this.jwtService.sign(payload),
+    };
   }
 
   async updatePassword(user: IUserInfo) {

@@ -7,6 +7,7 @@ import { LocalAuthGuard } from '../../shares/guards/local-auth.guard';
 import { JwtAuthGuard } from '../../shares/guards/jwt-auth.guard';
 import { RegisterRequestDto } from './dto/register-request.dto';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { RegisterResponseDto } from './dto/register-response.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -21,8 +22,14 @@ export class AuthController {
   @ApiBody({
     type: RegisterRequestDto,
   })
-  async register(@Body() registerRequest: RegisterRequestDto) {
-    return await this.authService.register(registerRequest);
+  @ApiResponse({
+    type: RegisterResponseDto,
+    status: HttpStatus.CREATED,
+    description: 'Successful',
+  })
+  async register(@Body() registerRequest: RegisterRequestDto): Promise<RegisterResponseDto> {
+    const res = await this.authService.register(registerRequest);
+    return plainToInstance(RegisterResponseDto, res);
   }
 
   @UseGuards(LocalAuthGuard)
