@@ -25,7 +25,7 @@ export class AuthService {
   }
 
   async register(registerRequest: RegisterRequestDto) {
-    await this.usersService.addNewUser(registerRequest, null);
+    await this.usersService.addNewUserWithNewTransaction(registerRequest);
     const payload = { email: registerRequest.email };
     return {
       verifyToken: this.jwtService.sign(payload, {

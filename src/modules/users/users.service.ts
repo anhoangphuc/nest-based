@@ -6,7 +6,11 @@ import { withTransaction } from '../../shares/helpers/transaction';
 import { hashString, isHashEqual } from '../../shares/helpers/cryptography';
 import { IUsersSearch } from '../../shares/interfaces/users-search.interface';
 import { isNullOrUndefined } from '../../shares/helpers/utils';
-import { ListUserNotFoundException, UserNotFoundException } from '../../shares/exceptions/users.exception';
+import {
+  ListUserNotFoundException,
+  UserAlreadyExistException,
+  UserNotFoundException,
+} from '../../shares/exceptions/users.exception';
 import { RegisterRequestDto } from '../auth/dto/register-request.dto';
 
 @Injectable()
@@ -14,8 +18,16 @@ export class UsersService {
   constructor(@InjectModel(Users.name) private usersModel: Model<UsersDocument>) {}
 
   async addNewUser(registerRequestDto: RegisterRequestDto, session: ClientSession): Promise<UsersDocument> {
+    const user = await this.usersModel.findOne({ email: registerRequestDto.email });
+    if (!isNullOrUndefined(user) && user.isActivated === true) {
+      throw new UserAlreadyExistException(registerRequestDto.email);
+    }
     registerRequestDto.password = await hashString(registerRequestDto.password);
-    const res = await this.usersModel.create([registerRequestDto], { session });
+    const res = await this.usersModel.findOneAndUpdate(
+      { email: registerRequestDto.email },
+      { password: registerRequestDto.password },
+      { session, upsert: true, new: true },
+    );
     return res[0];
   }
 
