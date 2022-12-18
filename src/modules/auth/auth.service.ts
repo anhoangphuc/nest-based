@@ -39,7 +39,7 @@ export class AuthService {
     const decodedData = await this.jwtService.verify(token, {
       secret: this.configService.getAuthConfiguration().verifyToken.secretKey,
     });
-    console.log(decodedData);
+    await this.usersService.activateUser(decodedData.email, null);
   }
 
   async updatePassword(user: IUserInfo) {

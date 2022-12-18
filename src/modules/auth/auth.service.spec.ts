@@ -55,6 +55,14 @@ describe(`AuthService`, () => {
       expect(res.isActivated).toEqual(false);
     });
 
+    it(`Verify user success`, async () => {
+      const verifyToken = await service.register({ email: 'hoangphucnb97@gmail.com', password: '1' });
+      await service.verifyToken(verifyToken.verifyToken);
+      const res = await service.validateUserWithEmailAndPassword('hoangphucnb97@gmail.com', '1');
+      expect(res.email === 'hoangphucnb97@gmail.com');
+      expect(res.isActivated).toEqual(true);
+    });
+
     it(`Login with not correct user`, async () => {
       const res = await service.validateUserWithEmailAndPassword(`hoangphucnb97@gmail.com`, '2');
       expect(res).toBeNull();

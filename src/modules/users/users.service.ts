@@ -31,6 +31,13 @@ export class UsersService {
     return res;
   }
 
+  async activateUser(email: string, session: ClientSession): Promise<UsersDocument> {
+    const user = await this.usersModel.findOne({ email }, {}, { session });
+    if (isNullOrUndefined(user)) throw new UserNotFoundException({ email });
+    if (user.isActivated === true) throw new UserAlreadyExistException(email);
+    return this.usersModel.findOneAndUpdate({ email }, { isActivated: true }, { session, new: true });
+  }
+
   async addNewUserWithNewTransaction(registerRequest: RegisterRequestDto): Promise<UsersDocument> {
     try {
       return await withTransaction(this.usersModel.db, async (session) => {
