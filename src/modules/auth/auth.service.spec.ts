@@ -11,6 +11,7 @@ import { UsersService } from '../users/users.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Users, UsersSchema } from '../users/schema/users.schema';
 import { DynamicModule } from '@nestjs/common';
+import { sleep } from '../../shares/helpers/utils';
 
 describe(`AuthService`, () => {
   let service: AuthService;
@@ -57,10 +58,18 @@ describe(`AuthService`, () => {
 
     it(`Verify user success`, async () => {
       const verifyToken = await service.register({ email: 'hoangphucnb97@gmail.com', password: '1' });
+      const notActivatedUser = await service.validateUserWithEmailAndPassword('hoangphucnb97@gmail.com', '1');
+      expect(notActivatedUser.isActivated).toEqual(false);
       await service.verifyToken(verifyToken.verifyToken);
       const res = await service.validateUserWithEmailAndPassword('hoangphucnb97@gmail.com', '1');
       expect(res.email === 'hoangphucnb97@gmail.com');
       expect(res.isActivated).toEqual(true);
+    });
+
+    it(`Verify user failed when token expired`, async () => {
+      const verifyToken = await service.register({ email: 'hoangphucnb97@gmail.com', password: '1' });
+      await sleep(2000);
+      await expect(() => service.verifyToken(verifyToken.verifyToken)).rejects.toThrowError('jwt expired');
     });
 
     it(`Login with not correct user`, async () => {
