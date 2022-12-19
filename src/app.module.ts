@@ -6,6 +6,9 @@ import { ConfigModule } from './modules/config/config.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigService } from './modules/config/config.service';
 import { UsersModule } from './modules/users/users.module';
+import { WinstonModule } from 'nest-winston';
+import winston from 'winston';
+import { createConsoleTransport, createFileTransport, enumerateErrorFormat, timestamp } from './shares/helpers/logger';
 
 @Module({
   imports: [
@@ -15,6 +18,16 @@ import { UsersModule } from './modules/users/users.module';
       useFactory: async (configService: ConfigService) => {
         return {
           uri: configService.getMongoUri(),
+        };
+      },
+      inject: [ConfigService],
+    }),
+    WinstonModule.forRootAsync({
+      useFactory: async (configService: ConfigService) => {
+        return {
+          level: 'info',
+          format: winston.format.combine(timestamp(), enumerateErrorFormat()),
+          transports: [createConsoleTransport(), createFileTransport(configService.getEnvironment())],
         };
       },
       inject: [ConfigService],
