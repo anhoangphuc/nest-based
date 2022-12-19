@@ -2,7 +2,11 @@
   "auth": {
     "jwt": {
       "secretKey": "123456",
-      "expireTime": 10
+      "expireTime": 100
+    },
+    "verifyToken": {
+      "secretKey": "verifyToken",
+      "expireTime": 100
     }
   },
   "mongodb": {

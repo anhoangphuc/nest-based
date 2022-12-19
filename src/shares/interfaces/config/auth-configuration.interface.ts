@@ -3,4 +3,9 @@ export interface IAuthConfiguration {
     secretKey: string;
     expireTime: number;
   };
+
+  verifyToken: {
+    secretKey: string;
+    expireTime: number;
+  };
 }

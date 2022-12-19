@@ -13,6 +13,12 @@ export class Users {
     type: String,
   })
   password: string;
+
+  @Prop({
+    type: Boolean,
+    default: false,
+  })
+  isActivated: boolean;
 }
 
 export const UsersSchema = SchemaFactory.createForClass(Users);

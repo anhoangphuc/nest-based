@@ -21,10 +21,12 @@ describe('AppController (e2e)', () => {
   });
 
   it('Should get an JWT access token after login successfully', async () => {
-    await request(app.getHttpServer())
+    const registerRes = await request(app.getHttpServer())
       .post('/auth/register')
       .send({ email: 'hoangphucnb97@gmail.com', password: '1' })
       .expect(201);
+
+    await request(app.getHttpServer()).get(`/auth/verify-token/${registerRes.body.verifyToken}`).expect(200);
 
     const loginRes = await request(app.getHttpServer())
       .post('/auth/login')
