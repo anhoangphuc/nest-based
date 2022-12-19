@@ -48,7 +48,7 @@ describe(`AuthService`, () => {
     expect(service).toBeDefined();
   });
 
-  describe(`validate user`, () => {
+  describe(`Register user`, () => {
     it(`Register success`, async () => {
       await service.register({ email: 'hoangphucnb97@gmail.com', password: '1' });
       const res = await service.validateUserWithEmailAndPassword('hoangphucnb97@gmail.com', '1');
@@ -56,6 +56,15 @@ describe(`AuthService`, () => {
       expect(res.isActivated).toEqual(false);
     });
 
+    it(`Register again will have new token`, async () => {
+      await service.register({ email: 'hoangphucnb97@gmail.com', password: '1' });
+      const res = await service.register({ email: 'hoangphucnb97@gmail.com', password: '2' });
+      expect(res).toBeDefined();
+      const user = await service.validateUserWithEmailAndPassword('hoangphucnb97@gmail.com', '2');
+      expect(user).toBeDefined();
+    });
+  });
+  describe(`validate user`, () => {
     it(`Verify user success`, async () => {
       const verifyToken = await service.register({ email: 'hoangphucnb97@gmail.com', password: '1' });
       const notActivatedUser = await service.validateUserWithEmailAndPassword('hoangphucnb97@gmail.com', '1');
@@ -79,7 +88,7 @@ describe(`AuthService`, () => {
   });
 
   it(`User login`, async () => {
-    const res = await service.login({ email: 'hoangphucnb97@gmail.com' });
+    const res = await service.login({ email: 'hoangphucnb97@gmail.com', isActivated: false });
     expect(res).toBeDefined();
     expect(res.accessToken).toBeDefined();
   });
