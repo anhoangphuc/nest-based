@@ -6,7 +6,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '../config/config.service';
 import { ConfigModule } from '../config/config.module';
 import { UsersModule } from '../users/users.module';
-import { rootMongooseTestModule } from '../../shares/helpers/setup-test';
+import { randomEmail, randomPassword, rootMongooseTestModule } from '../../shares/helpers/setup-test';
 import { UsersService } from '../users/users.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Users, UsersSchema } from '../users/schema/users.schema';
@@ -50,39 +50,47 @@ describe(`AuthService`, () => {
 
   describe(`Register user`, () => {
     it(`Register success`, async () => {
-      await service.register({ email: 'hoangphucnb97@gmail.com', password: '1' });
-      const res = await service.validateUserWithEmailAndPassword('hoangphucnb97@gmail.com', '1');
-      expect(res.email === 'hoangphucnb97@gmail.com');
+      const email = randomEmail();
+      const password = randomPassword();
+      await service.register({ email, password });
+      const res = await service.validateUserWithEmailAndPassword(email, password);
+      expect(res.email === email);
       expect(res.isActivated).toEqual(false);
     });
 
     it(`Register again will have new token`, async () => {
-      await service.register({ email: 'hoangphucnb97@gmail.com', password: '1' });
-      const res = await service.register({ email: 'hoangphucnb97@gmail.com', password: '2' });
+      const email = randomEmail();
+      const password = randomPassword();
+      await service.register({ email, password });
+      const res = await service.register({ email, password });
       expect(res).toBeDefined();
-      const user = await service.validateUserWithEmailAndPassword('hoangphucnb97@gmail.com', '2');
+      const user = await service.validateUserWithEmailAndPassword(email, '2');
       expect(user).toBeDefined();
     });
   });
   describe(`validate user`, () => {
     it(`Verify user success`, async () => {
-      const verifyToken = await service.register({ email: 'hoangphucnb97@gmail.com', password: '1' });
-      const notActivatedUser = await service.validateUserWithEmailAndPassword('hoangphucnb97@gmail.com', '1');
+      const email = randomEmail();
+      const password = randomPassword();
+      const verifyToken = await service.register({ email, password });
+      const notActivatedUser = await service.validateUserWithEmailAndPassword(email, password);
       expect(notActivatedUser.isActivated).toEqual(false);
       await service.verifyToken(verifyToken.verifyToken);
-      const res = await service.validateUserWithEmailAndPassword('hoangphucnb97@gmail.com', '1');
-      expect(res.email === 'hoangphucnb97@gmail.com');
+      const res = await service.validateUserWithEmailAndPassword(email, password);
+      expect(res.email === email);
       expect(res.isActivated).toEqual(true);
     });
 
     it(`Verify user failed when token expired`, async () => {
-      const verifyToken = await service.register({ email: 'hoangphucnb97@gmail.com', password: '1' });
+      const email = randomEmail();
+      const password = randomPassword();
+      const verifyToken = await service.register({ email, password });
       await sleep(2000);
       await expect(() => service.verifyToken(verifyToken.verifyToken)).rejects.toThrowError('jwt expired');
     });
 
     it(`Login with not correct user`, async () => {
-      const res = await service.validateUserWithEmailAndPassword(`hoangphucnb97@gmail.com`, '2');
+      const res = await service.validateUserWithEmailAndPassword(randomEmail(), randomPassword());
       expect(res).toBeNull();
     });
   });
