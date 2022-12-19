@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, Post, Request, UseGuards } from '@nestjs/common';
 import { LoginRequestDto } from './dto/login-request.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
 import { AuthService } from './auth.service';
@@ -44,8 +44,8 @@ export class AuthController {
     description: 'Token used for verifying',
     example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImhvYW5',
   })
-  async verifyToken(@Request() request) {
-    const { user } = request;
+  async verifyToken(@Request() request, @Param('token') token: string) {
+    await this.authService.verifyToken(token);
   }
 
   @UseGuards(LocalAuthGuard)
