@@ -12,6 +12,14 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Users, UsersSchema } from '../users/schema/users.schema';
 import { DynamicModule } from '@nestjs/common';
 import { sleep } from '../../shares/helpers/utils';
+import { WinstonModule } from 'nest-winston';
+import winston from 'winston';
+import {
+  createConsoleTransport,
+  createFileTransport,
+  enumerateErrorFormat,
+  timestamp,
+} from '../../shares/helpers/logger';
 
 describe(`AuthService`, () => {
   let service: AuthService;
@@ -27,6 +35,16 @@ describe(`AuthService`, () => {
       imports: [
         rootMongooseTestModule(),
         ConfigModule.register({ folder: './configuration' }),
+        WinstonModule.forRootAsync({
+          useFactory: async (configService: ConfigService) => {
+            return {
+              level: 'info',
+              format: winston.format.combine(timestamp(), enumerateErrorFormat()),
+              transports: [createConsoleTransport(), createFileTransport(configService.getEnvironment())],
+            };
+          },
+          inject: [ConfigService],
+        }),
         JwtModule.registerAsync({
           useFactory: async (configService: ConfigService) => ({
             secret: configService.getAuthConfiguration().jwt.secretKey,

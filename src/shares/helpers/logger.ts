@@ -36,5 +36,11 @@ export function createFileTransport(env: string): Transport {
   return new winston.transports.File({
     filename: `nest-based-${env}.txt`,
     level: 'info',
+    format: combine(
+      printf((info) => {
+        const { timestamp, level, message, ...extra } = info;
+        return `${timestamp} [${level}]: ${message}` + (isEmpty(extra) ? '' : ` | ${safeToString(extra)}`);
+      }),
+    ),
   });
 }
