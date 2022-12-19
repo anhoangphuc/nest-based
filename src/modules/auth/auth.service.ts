@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { IUserInfo } from './user-info.interface';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { UsersDocument } from '../users/schema/users.schema';
@@ -43,7 +42,7 @@ export class AuthService {
     await this.usersService.activateUser(decodedData.email, null);
   }
 
-  async updatePassword(user: IUserInfo) {
+  async updatePassword(user: PublicUserInfoResponseDto) {
     console.log(`Update password of user ${user.email}`);
   }
 }
