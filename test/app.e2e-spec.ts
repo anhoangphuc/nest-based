@@ -3,6 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from './../src/app.module';
 import { sleep } from '../src/shares/helpers/utils';
+import { randomEmail, randomPassword } from '../src/shares/helpers/setup-test';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -21,17 +22,13 @@ describe('AppController (e2e)', () => {
   });
 
   it('Should get an JWT access token after login successfully', async () => {
-    const registerRes = await request(app.getHttpServer())
-      .post('/auth/register')
-      .send({ email: 'hoangphucnb97@gmail.com', password: '1' })
-      .expect(201);
+    const email = randomEmail();
+    const password = randomPassword();
+    const registerRes = await request(app.getHttpServer()).post('/auth/register').send({ email, password }).expect(201);
 
     await request(app.getHttpServer()).get(`/auth/verify-token/${registerRes.body.verifyToken}`).expect(200);
 
-    const loginRes = await request(app.getHttpServer())
-      .post('/auth/login')
-      .send({ email: 'hoangphucnb97@gmail.com', password: '1' })
-      .expect(201);
+    const loginRes = await request(app.getHttpServer()).post('/auth/login').send({ email, password }).expect(201);
 
     expect(loginRes.body.accessToken).toBeDefined();
 
@@ -44,9 +41,10 @@ describe('AppController (e2e)', () => {
   it(
     `Should unauthorized when token expired`,
     async () => {
-      const loginRes = await request(app.getHttpServer())
-        .post('/auth/login')
-        .send({ email: 'hoangphucnb97@gmail.com', password: '1' });
+      const email = randomEmail();
+      const password = randomPassword();
+      await request(app.getHttpServer()).post('/auth/register').send({ email, password });
+      const loginRes = await request(app.getHttpServer()).post('/auth/login').send({ email, password });
 
       await sleep(2 * 1000);
       await request(app.getHttpServer())
