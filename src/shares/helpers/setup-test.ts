@@ -19,9 +19,9 @@ export const closeMongodConnection = async () => {
   }
 };
 
-export function randomString(length: number, withNumber: boolean) {
+export function randomString(length: number, withNumber: boolean): string {
   const s = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  Array.from(Array(length).keys())
+  return Array.from(Array(length).keys())
     .map((_) => s.charAt(Math.floor(Math.random() * (withNumber ? s.length : s.length - 10))))
     .join('');
 }
