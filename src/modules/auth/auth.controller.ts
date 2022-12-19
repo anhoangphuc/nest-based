@@ -46,7 +46,6 @@ export class AuthController {
   })
   async verifyToken(@Request() request) {
     const { user } = request;
-    console.log(user);
   }
 
   @UseGuards(LocalAuthGuard)

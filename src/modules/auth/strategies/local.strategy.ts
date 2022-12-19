@@ -1,9 +1,10 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
 import { Injectable } from '@nestjs/common';
-import { IUserInfo } from '../user-info.interface';
 import { AuthService } from '../auth.service';
 import { UserUnauthorizedException } from '../../../shares/exceptions/auth.exception';
+import { PublicUserInfoResponseDto } from '../../users/dto/public-user-info.response.dto';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -11,9 +12,9 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     super({ usernameField: 'email' });
   }
 
-  async validate(email: string, password: string): Promise<IUserInfo> {
+  async validate(email: string, password: string): Promise<PublicUserInfoResponseDto> {
     const user = await this.authService.validateUserWithEmailAndPassword(email, password);
     if (!user) throw new UserUnauthorizedException(`Username and password not correct`);
-    return user;
+    return plainToInstance(PublicUserInfoResponseDto, user);
   }
 }

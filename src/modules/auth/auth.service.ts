@@ -5,6 +5,7 @@ import { UsersService } from '../users/users.service';
 import { UsersDocument } from '../users/schema/users.schema';
 import { RegisterRequestDto } from './dto/register-request.dto';
 import { ConfigService } from '../config/config.service';
+import { PublicUserInfoResponseDto } from '../users/dto/public-user-info.response.dto';
 
 @Injectable()
 export class AuthService {
@@ -17,8 +18,8 @@ export class AuthService {
     return await this.usersService.getUserWithEmailAndPassword(email, password);
   }
 
-  async login(user: IUserInfo) {
-    const payload = { email: user.email };
+  async login(user: PublicUserInfoResponseDto) {
+    const payload = { email: user.email, isActivated: user.isActivated };
     return {
       accessToken: this.jwtService.sign(payload),
     };
