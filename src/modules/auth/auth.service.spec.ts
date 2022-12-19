@@ -96,7 +96,7 @@ describe(`AuthService`, () => {
   });
 
   it(`User login`, async () => {
-    const res = await service.login({ email: 'hoangphucnb97@gmail.com', isActivated: false });
+    const res = await service.login({ email: randomEmail(), isActivated: false });
     expect(res).toBeDefined();
     expect(res.accessToken).toBeDefined();
   });
