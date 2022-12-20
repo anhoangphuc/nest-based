@@ -8,6 +8,7 @@ import { JwtAuthGuard } from '../../shares/guards/jwt-auth.guard';
 import { RegisterRequestDto } from './dto/register-request.dto';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { RegisterResponseDto } from './dto/register-response.dto';
+import { VerifyResponseDto } from './dto/verify-response.dto';
 
 @Controller('auth')
 @ApiBearerAuth()
@@ -44,8 +45,9 @@ export class AuthController {
     description: 'Token used for verifying',
     example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImhvYW5',
   })
-  async verifyToken(@Request() request, @Param('token') token: string) {
-    await this.authService.verifyToken(token);
+  async verifyToken(@Request() request, @Param('token') token: string): Promise<VerifyResponseDto> {
+    const res = await this.authService.verifyToken(token);
+    return plainToInstance(VerifyResponseDto, res);
   }
 
   @UseGuards(LocalAuthGuard)

@@ -49,7 +49,7 @@ export class AuthService {
       this.logger.error(e);
       throw new VerifyTokenNotValidException();
     }
-    await this.usersService.activateUser(decodedData.email, null);
+    return await this.usersService.activateUser(decodedData.email, null);
   }
 
   async updatePassword(user: PublicUserInfoResponseDto) {
