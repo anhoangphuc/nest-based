@@ -6,3 +6,9 @@ export class UserUnauthorizedException extends BaseException {
     super(msg, HttpStatus.UNAUTHORIZED);
   }
 }
+
+export class VerifyTokenNotValidException extends BaseException {
+  constructor() {
+    super(`Verify token not valid`, HttpStatus.BAD_REQUEST);
+  }
+}

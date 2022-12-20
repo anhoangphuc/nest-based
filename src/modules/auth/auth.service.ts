@@ -6,6 +6,7 @@ import { RegisterRequestDto } from './dto/register-request.dto';
 import { ConfigService } from '../config/config.service';
 import { PublicUserInfoResponseDto } from '../users/dto/public-user-info.response.dto';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { VerifyTokenNotValidException } from '../../shares/exceptions/auth.exception';
 
 @Injectable()
 export class AuthService {
@@ -38,9 +39,15 @@ export class AuthService {
   }
 
   async verifyToken(token: string) {
-    const decodedData = await this.jwtService.verify(token, {
-      secret: this.configService.getAuthConfiguration().verifyToken.secretKey,
-    });
+    let decodedData;
+    try {
+      decodedData = await this.jwtService.verify(token, {
+        secret: this.configService.getAuthConfiguration().verifyToken.secretKey,
+      });
+    } catch (e) {
+      this.logger.error(e);
+      throw new VerifyTokenNotValidException();
+    }
     await this.usersService.activateUser(decodedData.email, null);
   }
 
