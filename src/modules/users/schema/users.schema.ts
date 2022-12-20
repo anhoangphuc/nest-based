@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { UsersRole } from '../../../shares/enums/users-role.enum';
 
 @Schema({ timestamps: true, collection: 'users' })
 export class Users {
@@ -15,10 +16,10 @@ export class Users {
   password: string;
 
   @Prop({
-    type: Boolean,
-    default: false,
+    enum: UsersRole,
+    default: UsersRole.USER_INACTIVATED,
   })
-  isActivated: boolean;
+  role: UsersRole;
 }
 
 export const UsersSchema = SchemaFactory.createForClass(Users);

@@ -12,6 +12,7 @@ import {
   UserNotFoundException,
 } from '../../shares/exceptions/users.exception';
 import { RegisterRequestDto } from '../auth/dto/register-request.dto';
+import { UsersRole } from '../../shares/enums/users-role.enum';
 
 @Injectable()
 export class UsersService {
@@ -19,7 +20,7 @@ export class UsersService {
 
   async addNewUser(registerRequestDto: RegisterRequestDto, session: ClientSession): Promise<UsersDocument> {
     const user = await this.usersModel.findOne({ email: registerRequestDto.email });
-    if (!isNullOrUndefined(user) && user.isActivated === true) {
+    if (!isNullOrUndefined(user) && user.role === UsersRole.USER_ACTIVATED) {
       throw new UserAlreadyExistException(registerRequestDto.email);
     }
     registerRequestDto.password = await hashString(registerRequestDto.password);
@@ -34,7 +35,7 @@ export class UsersService {
   async activateUser(email: string, session: ClientSession): Promise<UsersDocument> {
     const user = await this.usersModel.findOne({ email }, {}, { session });
     if (isNullOrUndefined(user)) throw new UserNotFoundException({ email });
-    if (user.isActivated === true) throw new UserAlreadyExistException(email);
+    if (user.role === UsersRole.USER_ACTIVATED) throw new UserAlreadyExistException(email);
     return this.usersModel.findOneAndUpdate({ email }, { isActivated: true }, { session, new: true });
   }
 
