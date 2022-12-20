@@ -117,7 +117,7 @@ describe(`AuthService`, () => {
   });
 
   it(`User login`, async () => {
-    const res = await service.login({ email: randomEmail(), isActivated: false });
+    const res = await service.login({ email: randomEmail(), role: UsersRole.USER_INACTIVATED });
     expect(res).toBeDefined();
     expect(res.accessToken).toBeDefined();
   });
