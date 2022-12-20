@@ -9,6 +9,7 @@ import fs from 'fs';
 import { isNullOrUndefined, isSomeValueNullOrUndefined } from '../../shares/helpers/utils';
 import { RequiredConfigurationNotFoundError } from '../../shares/exceptions/config.exception';
 import { IMongoConfiguration } from '../../shares/interfaces/config/mongodb-configuration.interface';
+import { ILoggerConfiguration } from '../../shares/interfaces/config/logger-configuration.interface';
 dotenv.config();
 
 @Injectable()
@@ -55,5 +56,9 @@ export class ConfigService {
 
   getEnvironment(): string {
     return process.env.APP_ENV;
+  }
+
+  getLoggerConfiguration(): ILoggerConfiguration {
+    return this.configuration.logger;
   }
 }

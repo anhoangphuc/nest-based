@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
@@ -6,6 +6,10 @@ import { ConfigModule } from './modules/config/config.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigService } from './modules/config/config.service';
 import { UsersModule } from './modules/users/users.module';
+import { WinstonModule } from 'nest-winston';
+import winston from 'winston';
+import { createTransports, enumerateErrorFormat, timestamp } from './shares/helpers/logger';
+import { AppLoggerMiddleware } from './middlewares/app-logger.middleware';
 
 @Module({
   imports: [
@@ -19,9 +23,27 @@ import { UsersModule } from './modules/users/users.module';
       },
       inject: [ConfigService],
     }),
+    WinstonModule.forRootAsync({
+      useFactory: async (configService: ConfigService) => {
+        const transports = createTransports(
+          configService.getLoggerConfiguration().useFile,
+          configService.getEnvironment(),
+        );
+        return {
+          level: 'info',
+          format: winston.format.combine(timestamp(), enumerateErrorFormat()),
+          transports,
+        };
+      },
+      inject: [ConfigService],
+    }),
     UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer): any {
+    consumer.apply(AppLoggerMiddleware).forRoutes('*');
+  }
+}

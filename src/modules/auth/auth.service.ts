@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { UsersDocument } from '../users/schema/users.schema';
 import { RegisterRequestDto } from './dto/register-request.dto';
 import { ConfigService } from '../config/config.service';
 import { PublicUserInfoResponseDto } from '../users/dto/public-user-info.response.dto';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 @Injectable()
 export class AuthService {
@@ -12,6 +13,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly usersService: UsersService,
     private readonly configService: ConfigService,
+    @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: LoggerService,
   ) {}
   async validateUserWithEmailAndPassword(email: string, password: string): Promise<UsersDocument> {
     return await this.usersService.getUserWithEmailAndPassword(email, password);

@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { randomEmail, randomPassword, rootMongooseTestModule } from '../../shares/helpers/setup-test';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Users, UsersSchema } from './schema/users.schema';
-import { hashString, isHashEqual } from '../../shares/helpers/cryptography';
+import { isHashEqual } from '../../shares/helpers/cryptography';
 import { RegisterRequestDto } from '../auth/dto/register-request.dto';
 
 describe('UsersService', () => {
