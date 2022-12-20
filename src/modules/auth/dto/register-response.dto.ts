@@ -1,27 +1,9 @@
 import { Exclude, Expose } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum } from 'class-validator';
-import { UsersRole } from '../../../shares/enums/users-role.enum';
+import { PublicUserInfoResponseDto } from '../../users/dto/public-user-info.response.dto';
 
 @Exclude()
-export class RegisterResponseDto {
-  @Expose()
-  @ApiProperty({
-    type: String,
-    description: 'Email of user',
-    example: 'john@email.com',
-  })
-  email: string;
-
-  @Expose()
-  @IsEnum(UsersRole)
-  @ApiProperty({
-    enum: UsersRole,
-    description: 'Role of user',
-    example: UsersRole.USER_INACTIVATED,
-  })
-  role: UsersRole;
-
+export class RegisterResponseDto extends PublicUserInfoResponseDto {
   @Expose()
   @ApiProperty({
     type: String,
