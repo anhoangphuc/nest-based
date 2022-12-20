@@ -24,10 +24,14 @@ import { createConsoleTransport, createFileTransport, enumerateErrorFormat, time
     }),
     WinstonModule.forRootAsync({
       useFactory: async (configService: ConfigService) => {
+        const transports = [createConsoleTransport()];
+        if (configService.getLoggerConfiguration().useFile === true) {
+          transports.push(createFileTransport(configService.getEnvironment()));
+        }
         return {
           level: 'info',
           format: winston.format.combine(timestamp(), enumerateErrorFormat()),
-          transports: [createConsoleTransport(), createFileTransport(configService.getEnvironment())],
+          transports,
         };
       },
       inject: [ConfigService],
