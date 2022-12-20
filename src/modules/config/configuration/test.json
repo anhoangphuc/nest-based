@@ -16,6 +16,6 @@
   },
   "logger": {
     "level": "info",
-    "useFile": false
+    "useFile": true
   }
 }

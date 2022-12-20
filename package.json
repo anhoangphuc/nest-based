@@ -34,6 +34,7 @@
     "bcrypt": "^5.1.0",
     "class-transformer": "^0.5.1",
     "dotenv": "^16.0.3",
+    "express-http-context": "^1.2.4",
     "mongodb-memory-server": "^8.10.2",
     "mongoose": "^6.7.3",
     "nest-winston": "^1.8.0",

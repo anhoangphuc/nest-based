@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
@@ -9,6 +9,7 @@ import { UsersModule } from './modules/users/users.module';
 import { WinstonModule } from 'nest-winston';
 import winston from 'winston';
 import { createTransports, enumerateErrorFormat, timestamp } from './shares/helpers/logger';
+import { AppLoggerMiddleware } from './middlewares/app-logger.middleware';
 
 @Module({
   imports: [
@@ -41,4 +42,8 @@ import { createTransports, enumerateErrorFormat, timestamp } from './shares/help
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer): any {
+    consumer.apply(AppLoggerMiddleware).forRoutes('*');
+  }
+}
