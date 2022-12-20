@@ -13,5 +13,9 @@
     "host": "localhost",
     "port": 27017,
     "database": "nest-based-test"
+  },
+  "logger": {
+    "level": "info",
+    "useFile": false
   }
 }
