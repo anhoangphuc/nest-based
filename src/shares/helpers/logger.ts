@@ -25,7 +25,10 @@ export function createConsoleTransport(): Transport {
       colorize(),
       printf((info) => {
         const { timestamp, level, message, ...extra } = info;
-        return `${timestamp} [${level}]: ${message}` + (isEmpty(extra) ? '' : ` | ${safeToString(extra)}`);
+        return (
+          `${timestamp} [${level}]: ${isEmpty(message) ? ' ' : safeToString(message)}` +
+          (isEmpty(extra) ? '' : ` | ${safeToString(extra)}`)
+        );
       }),
     ),
     stderrLevels: ['error'],
@@ -39,7 +42,10 @@ export function createFileTransport(env: string): Transport {
     format: combine(
       printf((info) => {
         const { timestamp, level, message, ...extra } = info;
-        return `${timestamp} [${level}]: ${message}` + (isEmpty(extra) ? '' : ` | ${safeToString(extra)}`);
+        return (
+          `${timestamp} [${level}]: ${isEmpty(message) ? ' ' : safeToString(message)}` +
+          (isEmpty(extra) ? '' : ` | ${safeToString(extra)}`)
+        );
       }),
     ),
   });
