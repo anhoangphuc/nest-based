@@ -29,7 +29,7 @@ export class UsersService {
       { password: registerRequestDto.password },
       { session, upsert: true, new: true },
     );
-    return res;
+    return res.toObject();
   }
 
   async activateUser(email: string, session: ClientSession): Promise<UsersDocument> {
