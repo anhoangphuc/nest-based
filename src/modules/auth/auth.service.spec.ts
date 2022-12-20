@@ -14,12 +14,7 @@ import { DynamicModule } from '@nestjs/common';
 import { sleep } from '../../shares/helpers/utils';
 import { WinstonModule } from 'nest-winston';
 import winston from 'winston';
-import {
-  createConsoleTransport,
-  createFileTransport,
-  enumerateErrorFormat,
-  timestamp,
-} from '../../shares/helpers/logger';
+import { createTransports, enumerateErrorFormat, timestamp } from '../../shares/helpers/logger';
 
 describe(`AuthService`, () => {
   let service: AuthService;
@@ -37,10 +32,14 @@ describe(`AuthService`, () => {
         ConfigModule.register({ folder: './configuration' }),
         WinstonModule.forRootAsync({
           useFactory: async (configService: ConfigService) => {
+            const transports = createTransports(
+              configService.getLoggerConfiguration().useFile,
+              configService.getEnvironment(),
+            );
             return {
               level: 'info',
               format: winston.format.combine(timestamp(), enumerateErrorFormat()),
-              transports: [createConsoleTransport(), createFileTransport(configService.getEnvironment())],
+              transports,
             };
           },
           inject: [ConfigService],

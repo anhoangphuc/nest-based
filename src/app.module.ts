@@ -8,7 +8,7 @@ import { ConfigService } from './modules/config/config.service';
 import { UsersModule } from './modules/users/users.module';
 import { WinstonModule } from 'nest-winston';
 import winston from 'winston';
-import { createConsoleTransport, createFileTransport, enumerateErrorFormat, timestamp } from './shares/helpers/logger';
+import { createTransports, enumerateErrorFormat, timestamp } from './shares/helpers/logger';
 
 @Module({
   imports: [
@@ -24,10 +24,10 @@ import { createConsoleTransport, createFileTransport, enumerateErrorFormat, time
     }),
     WinstonModule.forRootAsync({
       useFactory: async (configService: ConfigService) => {
-        const transports = [createConsoleTransport()];
-        if (configService.getLoggerConfiguration().useFile === true) {
-          transports.push(createFileTransport(configService.getEnvironment()));
-        }
+        const transports = createTransports(
+          configService.getLoggerConfiguration().useFile,
+          configService.getEnvironment(),
+        );
         return {
           level: 'info',
           format: winston.format.combine(timestamp(), enumerateErrorFormat()),

@@ -44,3 +44,11 @@ export function createFileTransport(env: string): Transport {
     ),
   });
 }
+
+export function createTransports(useFile: boolean, env: string): Transport[] {
+  const transports = [createConsoleTransport()];
+  if (useFile === true) {
+    transports.push(createFileTransport(env));
+  }
+  return transports;
+}

@@ -7,7 +7,6 @@ import { ConfigService } from '../config/config.service';
 import { PublicUserInfoResponseDto } from '../users/dto/public-user-info.response.dto';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
-import { safeToString } from '../../shares/helpers/utils';
 
 @Injectable()
 export class AuthService {
