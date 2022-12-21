@@ -20,6 +20,11 @@ export class Users {
     default: UsersRole.USER_INACTIVATED,
   })
   role: UsersRole;
+
+  @Prop({
+    type: String,
+  })
+  ethAddress: string;
 }
 
 export const UsersSchema = SchemaFactory.createForClass(Users);
