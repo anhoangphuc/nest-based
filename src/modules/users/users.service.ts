@@ -5,7 +5,7 @@ import { ClientSession, Model } from 'mongoose';
 import { withTransaction } from '../../shares/helpers/transaction';
 import { hashString, isHashEqual } from '../../shares/helpers/cryptography';
 import { IUsersSearch } from '../../shares/interfaces/users-search.interface';
-import { isNullOrUndefined } from '../../shares/helpers/utils';
+import { isEmpty, isNullOrUndefined } from '../../shares/helpers/utils';
 import {
   ListUserNotFoundException,
   UserAlreadyExistException,
@@ -71,9 +71,13 @@ export class UsersService {
 
   async getListOfUsers(option: IUsersSearch, session: ClientSession, throwException = false): Promise<UsersDocument[]> {
     const filter = {};
-    if (!isNullOrUndefined(option.email)) {
+    if (!isEmpty(option.email)) {
       filter['email'] = { $in: option.email };
     }
+    if (!isEmpty(option.role)) {
+      filter['role'] = { $in: option.role };
+    }
+    console.log(filter);
     const users = await this.usersModel.find(filter, {}, { session });
     if (users.length === 0 && throwException === true) {
       throw new ListUserNotFoundException(option);

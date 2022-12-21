@@ -1,5 +1,5 @@
-import { Controller, DefaultValuePipe, Get, Query, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import { Controller, DefaultValuePipe, Get, ParseArrayPipe, Query, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../shares/guards/jwt-auth.guard';
 import { UsersService } from './users.service';
 import { plainToInstance } from 'class-transformer';
@@ -23,9 +23,16 @@ export class UsersAdminController {
     summary: 'Admin get list of users',
   })
   @ApiQuery({
-    name: 'roles',
+    name: 'role',
     description: 'List of role want to query',
-    example: ['USER_ACTIVATE,USER_INACTIVATED'],
+    example: 'USER_ACTIVATE,USER_INACTIVATED',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'email',
+    description: 'List of email want to query',
+    example: 'john@email.com,witch@email.com',
+    required: false,
   })
   @ApiResponse({
     type: UsersInfoResponseDto,
@@ -33,8 +40,11 @@ export class UsersAdminController {
     description: 'Successful',
     isArray: true,
   })
-  async getListUsers(@Query('roles', new DefaultValuePipe([]), new ParseArrayEnumPipe(UsersRole)) roles: UsersRole[]) {
-    const res = await this.usersService.getListOfUsers({}, null);
+  async getListUsers(
+    @Query('role', new DefaultValuePipe([]), ParseArrayPipe, new ParseArrayEnumPipe(UsersRole)) role: UsersRole[],
+    @Query('email', new DefaultValuePipe([]), ParseArrayPipe) email: string[],
+  ) {
+    const res = await this.usersService.getListOfUsers({ email, role }, null);
     return plainToInstance(UsersInfoResponseDto, res);
   }
 }
