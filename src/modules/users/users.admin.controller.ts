@@ -4,9 +4,14 @@ import { JwtAuthGuard } from '../../shares/guards/jwt-auth.guard';
 import { UsersService } from './users.service';
 import { plainToInstance } from 'class-transformer';
 import { UsersInfoResponseDto } from './dto/users-info-response.dto';
+import { Roles } from '../../shares/decorators/roles.decorator';
+import { UsersRole } from '../../shares/enums/users-role.enum';
+import { RolesGuard } from '../../shares/guards/roles.guard';
 
 @Controller('admin/users')
 @ApiBearerAuth()
+@UseGuards(RolesGuard)
+@Roles(UsersRole.ADMIN)
 @UseGuards(JwtAuthGuard)
 export class UsersAdminController {
   constructor(private readonly usersService: UsersService) {}
