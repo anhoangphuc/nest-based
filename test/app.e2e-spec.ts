@@ -35,6 +35,7 @@ describe('AppController (e2e)', () => {
     await request(app.getHttpServer())
       .post('/auth/update-password')
       .set('Authorization', `Bearer ${loginRes.body.accessToken}`)
+      .send({ newPassword: '2' })
       .expect(201);
   });
 

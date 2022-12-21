@@ -79,7 +79,6 @@ export class UsersService {
     if (!isEmpty(option.role)) {
       filter['role'] = { $in: option.role };
     }
-    console.log(filter);
     const users = await this.usersModel.find(filter, {}, { session });
     if (users.length === 0 && throwException === true) {
       throw new ListUserNotFoundException(option);
