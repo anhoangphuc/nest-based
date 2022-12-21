@@ -2,9 +2,9 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
-import { ConfigModule } from './modules/config/config.module';
+import { CoreModule } from './modules/core/core.module';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ConfigService } from './modules/config/config.service';
+import { ConfigService } from './modules/core/config.service';
 import { UsersModule } from './modules/users/users.module';
 import { WinstonModule } from 'nest-winston';
 import winston from 'winston';
@@ -14,7 +14,7 @@ import { AppLoggerMiddleware } from './middlewares/app-logger.middleware';
 @Module({
   imports: [
     AuthModule,
-    ConfigModule.register({ folder: 'configuration' }),
+    CoreModule.register({ folder: 'configuration' }),
     MongooseModule.forRootAsync({
       useFactory: async (configService: ConfigService) => {
         return {

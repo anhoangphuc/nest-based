@@ -1,6 +1,6 @@
 import { Exclude, Expose } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail } from 'class-validator';
+import { IsEmail, IsString } from 'class-validator';
 
 @Exclude()
 export class RegisterRequestDto {
@@ -19,5 +19,6 @@ export class RegisterRequestDto {
     description: 'Password of user',
     example: '1',
   })
+  @IsString()
   password: string;
 }
