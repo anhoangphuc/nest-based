@@ -28,6 +28,7 @@ import { AccountSignatureModule } from './modules/account-signature/account-sign
       useFactory: async (configService: ConfigService) => {
         const transports = createTransports(
           configService.getLoggerConfiguration().useFile,
+          configService.getAppName(),
           configService.getEnvironment(),
         );
         return {

@@ -35,9 +35,9 @@ export function createConsoleTransport(): Transport {
   });
 }
 
-export function createFileTransport(env: string): Transport {
+export function createFileTransport(appName: string, env: string): Transport {
   return new winston.transports.File({
-    filename: `nest-based-${env}.txt`,
+    filename: `${appName}-${env}.txt`,
     level: 'info',
     format: combine(
       printf((info) => {
@@ -51,10 +51,10 @@ export function createFileTransport(env: string): Transport {
   });
 }
 
-export function createTransports(useFile: boolean, env: string): Transport[] {
+export function createTransports(useFile: boolean, appName: string, env: string): Transport[] {
   const transports = [createConsoleTransport()];
   if (useFile === true) {
-    transports.push(createFileTransport(env));
+    transports.push(createFileTransport(appName, env));
   }
   return transports;
 }
