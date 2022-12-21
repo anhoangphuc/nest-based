@@ -36,6 +36,7 @@ describe(`AuthService`, () => {
           useFactory: async (configService: ConfigService) => {
             const transports = createTransports(
               configService.getLoggerConfiguration().useFile,
+              configService.getAppName(),
               configService.getEnvironment(),
             );
             return {
