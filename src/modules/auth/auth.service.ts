@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { UsersDocument } from '../users/schema/users.schema';
 import { RegisterRequestDto } from './dto/register-request.dto';
-import { ConfigService } from '../config/config.service';
+import { ConfigService } from '../core/config.service';
 import { PublicUserInfoResponseDto } from '../users/dto/public-user-info.response.dto';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { VerifyTokenNotValidException } from '../../shares/exceptions/auth.exception';

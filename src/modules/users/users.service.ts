@@ -15,7 +15,6 @@ import { RegisterRequestDto } from '../auth/dto/register-request.dto';
 import { UsersRole } from '../../shares/enums/users-role.enum';
 import { UpdatePasswordRequestDto } from '../auth/dto/update-password-request.dto';
 import { LinkAddressRequestDto } from './dto/link-address-request.dto';
-import { use } from 'passport';
 
 @Injectable()
 export class UsersService {

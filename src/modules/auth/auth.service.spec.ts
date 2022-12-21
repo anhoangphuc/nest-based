@@ -3,8 +3,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtModule } from '@nestjs/jwt';
-import { ConfigService } from '../config/config.service';
-import { ConfigModule } from '../config/config.module';
+import { ConfigService } from '../core/config.service';
+import { CoreModule } from '../core/core.module';
 import { UsersModule } from '../users/users.module';
 import { randomEmail, randomPassword, rootMongooseTestModule } from '../../shares/helpers/setup-test';
 import { UsersService } from '../users/users.service';
@@ -31,7 +31,7 @@ describe(`AuthService`, () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
         rootMongooseTestModule(),
-        ConfigModule.register({ folder: './configuration' }),
+        CoreModule.register({ folder: './configuration' }),
         WinstonModule.forRootAsync({
           useFactory: async (configService: ConfigService) => {
             const transports = createTransports(
@@ -44,15 +44,6 @@ describe(`AuthService`, () => {
               transports,
             };
           },
-          inject: [ConfigService],
-        }),
-        JwtModule.registerAsync({
-          useFactory: async (configService: ConfigService) => ({
-            secret: configService.getAuthConfiguration().jwt.secretKey,
-            signOptions: {
-              expiresIn: configService.getAuthConfiguration().jwt.expireTime,
-            },
-          }),
           inject: [ConfigService],
         }),
         UsersModuleTest,

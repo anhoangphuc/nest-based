@@ -7,7 +7,9 @@ import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  // Make winston logger default logger
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
+  //To use class-validator
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
 
   await setupSwagger(app);
