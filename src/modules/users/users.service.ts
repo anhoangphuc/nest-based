@@ -13,6 +13,7 @@ import {
 } from '../../shares/exceptions/users.exception';
 import { RegisterRequestDto } from '../auth/dto/register-request.dto';
 import { UsersRole } from '../../shares/enums/users-role.enum';
+import { UpdatePasswordRequestDto } from '../auth/dto/update-password-request.dto';
 
 @Injectable()
 export class UsersService {
@@ -28,6 +29,22 @@ export class UsersService {
       { email: registerRequestDto.email },
       { password: registerRequestDto.password },
       { session, upsert: true, new: true },
+    );
+    return res.toObject();
+  }
+
+  async updatePassword(
+    email: string,
+    updatePassword: UpdatePasswordRequestDto,
+    session: ClientSession,
+  ): Promise<UsersDocument> {
+    updatePassword.newPassword = await hashString(updatePassword.newPassword);
+    const res = await this.usersModel.findOneAndUpdate(
+      {
+        email,
+      },
+      { password: updatePassword.newPassword },
+      { session, new: true },
     );
     return res.toObject();
   }

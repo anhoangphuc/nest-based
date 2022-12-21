@@ -7,6 +7,7 @@ import { ConfigService } from '../config/config.service';
 import { PublicUserInfoResponseDto } from '../users/dto/public-user-info.response.dto';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { VerifyTokenNotValidException } from '../../shares/exceptions/auth.exception';
+import { UpdatePasswordRequestDto } from './dto/update-password-request.dto';
 
 @Injectable()
 export class AuthService {
@@ -52,7 +53,10 @@ export class AuthService {
     return await this.usersService.activateUser(decodedData.email, null);
   }
 
-  async updatePassword(user: PublicUserInfoResponseDto) {
-    console.log(`Update password of user ${user.email}`);
+  async updatePassword(
+    user: PublicUserInfoResponseDto,
+    updatePassword: UpdatePasswordRequestDto,
+  ): Promise<UsersDocument> {
+    return await this.usersService.updatePassword(user.email, updatePassword, null);
   }
 }
