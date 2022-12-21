@@ -1,5 +1,7 @@
 import { Exclude, Expose } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum } from 'class-validator';
+import { UsersRole } from '../../../shares/enums/users-role.enum';
 
 @Exclude()
 export class PublicUserInfoResponseDto {
@@ -12,10 +14,11 @@ export class PublicUserInfoResponseDto {
   email: string;
 
   @Expose()
+  @IsEnum(UsersRole)
   @ApiProperty({
-    type: Boolean,
-    description: 'Is user activated',
-    example: true,
+    enum: UsersRole,
+    description: 'Role of user',
+    example: UsersRole.USER_INACTIVATED,
   })
-  isActivated: boolean;
+  role: UsersRole;
 }

@@ -1,0 +1,5 @@
+export enum UsersRole {
+  ADMIN = 'ADMIN',
+  USER_INACTIVATED = 'USER_INACTIVATED',
+  USER_ACTIVATED = 'USER_ACTIVATED',
+}

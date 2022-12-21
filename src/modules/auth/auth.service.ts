@@ -7,6 +7,7 @@ import { ConfigService } from '../config/config.service';
 import { PublicUserInfoResponseDto } from '../users/dto/public-user-info.response.dto';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { VerifyTokenNotValidException } from '../../shares/exceptions/auth.exception';
+import { UpdatePasswordRequestDto } from './dto/update-password-request.dto';
 
 @Injectable()
 export class AuthService {
@@ -21,16 +22,18 @@ export class AuthService {
   }
 
   async login(user: PublicUserInfoResponseDto) {
-    const payload = { email: user.email, isActivated: user.isActivated };
+    const payload = { email: user.email, role: user.role };
     return {
+      ...payload,
       accessToken: this.jwtService.sign(payload),
     };
   }
 
   async register(registerRequest: RegisterRequestDto) {
-    await this.usersService.addNewUserWithNewTransaction(registerRequest);
+    const user = await this.usersService.addNewUserWithNewTransaction(registerRequest);
     const payload = { email: registerRequest.email };
     return {
+      ...user,
       verifyToken: this.jwtService.sign(payload, {
         secret: this.configService.getAuthConfiguration().verifyToken.secretKey,
         expiresIn: this.configService.getAuthConfiguration().verifyToken.expireTime,
@@ -48,10 +51,13 @@ export class AuthService {
       this.logger.error(e);
       throw new VerifyTokenNotValidException();
     }
-    await this.usersService.activateUser(decodedData.email, null);
+    return await this.usersService.activateUser(decodedData.email, null);
   }
 
-  async updatePassword(user: PublicUserInfoResponseDto) {
-    console.log(`Update password of user ${user.email}`);
+  async updatePassword(
+    user: PublicUserInfoResponseDto,
+    updatePassword: UpdatePasswordRequestDto,
+  ): Promise<UsersDocument> {
+    return await this.usersService.updatePassword(user.email, updatePassword, null);
   }
 }

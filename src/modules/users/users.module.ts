@@ -3,10 +3,24 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Users, UsersSchema } from './schema/users.schema';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigService } from '../config/config.service';
+import { UsersAdminController } from './users.admin.controller';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: Users.name, schema: UsersSchema }])],
-  controllers: [UsersController],
+  imports: [
+    MongooseModule.forFeature([{ name: Users.name, schema: UsersSchema }]),
+    JwtModule.registerAsync({
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.getAuthConfiguration().jwt.secretKey,
+        signOptions: {
+          expiresIn: configService.getAuthConfiguration().jwt.expireTime,
+        },
+      }),
+      inject: [ConfigService],
+    }),
+  ],
+  controllers: [UsersController, UsersAdminController],
   providers: [UsersService],
   exports: [UsersService],
 })

@@ -5,13 +5,17 @@ import { ClientSession, Model } from 'mongoose';
 import { withTransaction } from '../../shares/helpers/transaction';
 import { hashString, isHashEqual } from '../../shares/helpers/cryptography';
 import { IUsersSearch } from '../../shares/interfaces/users-search.interface';
-import { isNullOrUndefined } from '../../shares/helpers/utils';
+import { isEmpty, isNullOrUndefined } from '../../shares/helpers/utils';
 import {
   ListUserNotFoundException,
   UserAlreadyExistException,
   UserNotFoundException,
 } from '../../shares/exceptions/users.exception';
 import { RegisterRequestDto } from '../auth/dto/register-request.dto';
+import { UsersRole } from '../../shares/enums/users-role.enum';
+import { UpdatePasswordRequestDto } from '../auth/dto/update-password-request.dto';
+import { LinkAddressRequestDto } from './dto/link-address-request.dto';
+import { use } from 'passport';
 
 @Injectable()
 export class UsersService {
@@ -19,7 +23,7 @@ export class UsersService {
 
   async addNewUser(registerRequestDto: RegisterRequestDto, session: ClientSession): Promise<UsersDocument> {
     const user = await this.usersModel.findOne({ email: registerRequestDto.email });
-    if (!isNullOrUndefined(user) && user.isActivated === true) {
+    if (!isNullOrUndefined(user) && user.role === UsersRole.USER_ACTIVATED) {
       throw new UserAlreadyExistException(registerRequestDto.email);
     }
     registerRequestDto.password = await hashString(registerRequestDto.password);
@@ -28,14 +32,32 @@ export class UsersService {
       { password: registerRequestDto.password },
       { session, upsert: true, new: true },
     );
-    return res;
+    return res.toObject();
+  }
+
+  async updatePassword(
+    email: string,
+    updatePassword: UpdatePasswordRequestDto,
+    session: ClientSession,
+  ): Promise<UsersDocument> {
+    updatePassword.newPassword = await hashString(updatePassword.newPassword);
+    const res = await this.usersModel.findOneAndUpdate(
+      {
+        email,
+      },
+      { password: updatePassword.newPassword },
+      { session, new: true },
+    );
+    return res.toObject();
   }
 
   async activateUser(email: string, session: ClientSession): Promise<UsersDocument> {
     const user = await this.usersModel.findOne({ email }, {}, { session });
     if (isNullOrUndefined(user)) throw new UserNotFoundException({ email });
-    if (user.isActivated === true) throw new UserAlreadyExistException(email);
-    return this.usersModel.findOneAndUpdate({ email }, { isActivated: true }, { session, new: true });
+    if (user.role === UsersRole.USER_ACTIVATED) throw new UserAlreadyExistException(email);
+    return (
+      await this.usersModel.findOneAndUpdate({ email }, { role: UsersRole.USER_ACTIVATED }, { session, new: true })
+    ).toObject();
   }
 
   async addNewUserWithNewTransaction(registerRequest: RegisterRequestDto): Promise<UsersDocument> {
@@ -50,13 +72,14 @@ export class UsersService {
   }
 
   async getListOfUsers(option: IUsersSearch, session: ClientSession, throwException = false): Promise<UsersDocument[]> {
-    const users = await this.usersModel.find(
-      {
-        email: isNullOrUndefined(option.email) ? {} : { $in: option.email },
-      },
-      {},
-      { session },
-    );
+    const filter = {};
+    if (!isEmpty(option.email)) {
+      filter['email'] = { $in: option.email };
+    }
+    if (!isEmpty(option.role)) {
+      filter['role'] = { $in: option.role };
+    }
+    const users = await this.usersModel.find(filter, {}, { session });
     if (users.length === 0 && throwException === true) {
       throw new ListUserNotFoundException(option);
     }
@@ -70,5 +93,22 @@ export class UsersService {
       throw new UserNotFoundException({ email, password });
     }
     return usersMatchedPass.length === 0 ? null : usersMatchedPass[0];
+  }
+
+  async linkAddress(
+    email: string,
+    linkAddressRequest: LinkAddressRequestDto,
+    session: ClientSession,
+    throwException = false,
+  ): Promise<UsersDocument> {
+    const user = await this.usersModel.findOneAndUpdate(
+      {
+        email,
+      },
+      { ethAddress: linkAddressRequest.ethAddress },
+      { session, new: true },
+    );
+    if (isNullOrUndefined(user) && throwException === true) throw new UserNotFoundException({ email });
+    return isNullOrUndefined(user) ? user : user.toObject();
   }
 }

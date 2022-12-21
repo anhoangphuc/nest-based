@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { UsersRole } from '../../../shares/enums/users-role.enum';
 
-@Schema({ timestamps: true, collection: 'users' })
+@Schema({ timestamps: true, collection: 'users', toObject: { virtuals: true } })
 export class Users {
   @Prop({
     type: String,
@@ -15,11 +16,19 @@ export class Users {
   password: string;
 
   @Prop({
-    type: Boolean,
-    default: false,
+    enum: UsersRole,
+    default: UsersRole.USER_INACTIVATED,
   })
-  isActivated: boolean;
+  role: UsersRole;
+
+  @Prop({
+    type: String,
+  })
+  ethAddress: string;
 }
 
 export const UsersSchema = SchemaFactory.createForClass(Users);
+UsersSchema.virtual('id').get(function () {
+  return this._id.toHexString();
+});
 export type UsersDocument = Users & Document;

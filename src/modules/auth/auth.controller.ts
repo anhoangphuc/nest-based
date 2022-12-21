@@ -8,6 +8,9 @@ import { JwtAuthGuard } from '../../shares/guards/jwt-auth.guard';
 import { RegisterRequestDto } from './dto/register-request.dto';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { RegisterResponseDto } from './dto/register-response.dto';
+import { VerifyResponseDto } from './dto/verify-response.dto';
+import { UpdatePasswordRequestDto } from './dto/update-password-request.dto';
+import { UpdatePasswordResponseDto } from './dto/update-password-response.dto';
 
 @Controller('auth')
 @ApiBearerAuth()
@@ -44,8 +47,9 @@ export class AuthController {
     description: 'Token used for verifying',
     example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImhvYW5',
   })
-  async verifyToken(@Request() request, @Param('token') token: string) {
-    await this.authService.verifyToken(token);
+  async verifyToken(@Request() request, @Param('token') token: string): Promise<VerifyResponseDto> {
+    const res = await this.authService.verifyToken(token);
+    return plainToInstance(VerifyResponseDto, res);
   }
 
   @UseGuards(LocalAuthGuard)
@@ -71,8 +75,23 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Post('update-password')
-  async updatePassword(@Request() request) {
+  @ApiOperation({
+    operationId: 'user-update-password',
+    description: 'User update password',
+    summary: 'User update password',
+  })
+  @ApiBody({
+    type: UpdatePasswordRequestDto,
+  })
+  @ApiResponse({
+    type: UpdatePasswordResponseDto,
+  })
+  async updatePassword(
+    @Request() request,
+    @Body() updatePasswordRequest: UpdatePasswordRequestDto,
+  ): Promise<UpdatePasswordResponseDto> {
     const { user } = request;
-    return await this.authService.updatePassword(user);
+    const res = await this.authService.updatePassword(user, updatePasswordRequest);
+    return plainToInstance(UpdatePasswordResponseDto, res);
   }
 }

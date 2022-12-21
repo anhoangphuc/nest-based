@@ -15,6 +15,8 @@ import { sleep } from '../../shares/helpers/utils';
 import { WinstonModule } from 'nest-winston';
 import winston from 'winston';
 import { createTransports, enumerateErrorFormat, timestamp } from '../../shares/helpers/logger';
+import { UsersRole } from '../../shares/enums/users-role.enum';
+import { VerifyTokenNotValidException } from '../../shares/exceptions/auth.exception';
 
 describe(`AuthService`, () => {
   let service: AuthService;
@@ -72,7 +74,7 @@ describe(`AuthService`, () => {
       await service.register({ email, password });
       const res = await service.validateUserWithEmailAndPassword(email, password);
       expect(res.email === email);
-      expect(res.isActivated).toEqual(false);
+      expect(res.role).toEqual(UsersRole.USER_INACTIVATED);
     });
 
     it(`Register again will have new token`, async () => {
@@ -91,11 +93,11 @@ describe(`AuthService`, () => {
       const password = randomPassword();
       const verifyToken = await service.register({ email, password });
       const notActivatedUser = await service.validateUserWithEmailAndPassword(email, password);
-      expect(notActivatedUser.isActivated).toEqual(false);
+      expect(notActivatedUser.role).toEqual(UsersRole.USER_INACTIVATED);
       await service.verifyToken(verifyToken.verifyToken);
       const res = await service.validateUserWithEmailAndPassword(email, password);
       expect(res.email === email);
-      expect(res.isActivated).toEqual(true);
+      expect(res.role).toEqual(UsersRole.USER_ACTIVATED);
     });
 
     it(`Verify user failed when token expired`, async () => {
@@ -103,7 +105,9 @@ describe(`AuthService`, () => {
       const password = randomPassword();
       const verifyToken = await service.register({ email, password });
       await sleep(2000);
-      await expect(() => service.verifyToken(verifyToken.verifyToken)).rejects.toThrowError('jwt expired');
+      await expect(() => service.verifyToken(verifyToken.verifyToken)).rejects.toThrowError(
+        new VerifyTokenNotValidException(),
+      );
     });
 
     it(`Login with not correct user`, async () => {
@@ -113,7 +117,7 @@ describe(`AuthService`, () => {
   });
 
   it(`User login`, async () => {
-    const res = await service.login({ email: randomEmail(), isActivated: false });
+    const res = await service.login({ email: randomEmail(), role: UsersRole.USER_INACTIVATED });
     expect(res).toBeDefined();
     expect(res.accessToken).toBeDefined();
   });
