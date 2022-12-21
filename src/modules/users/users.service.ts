@@ -70,16 +70,15 @@ export class UsersService {
   }
 
   async getListOfUsers(option: IUsersSearch, session: ClientSession, throwException = false): Promise<UsersDocument[]> {
-    const users = await this.usersModel.find(
-      {
-        email: isNullOrUndefined(option.email) ? {} : { $in: option.email },
-      },
-      {},
-      { session },
-    );
+    const filter = {};
+    if (!isNullOrUndefined(option.email)) {
+      filter['email'] = { $in: option.email };
+    }
+    const users = await this.usersModel.find(filter, {}, { session });
     if (users.length === 0 && throwException === true) {
       throw new ListUserNotFoundException(option);
     }
+    console.log(users);
     return users;
   }
 
