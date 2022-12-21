@@ -78,7 +78,6 @@ export class UsersService {
     if (users.length === 0 && throwException === true) {
       throw new ListUserNotFoundException(option);
     }
-    console.log(users);
     return users;
   }
 

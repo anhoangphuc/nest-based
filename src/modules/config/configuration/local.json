@@ -2,7 +2,7 @@
   "auth": {
     "jwt": {
       "secretKey": "123456",
-      "expireTime": 100
+      "expireTime": 1000
     },
     "verifyToken": {
       "secretKey": "verifyToken",
