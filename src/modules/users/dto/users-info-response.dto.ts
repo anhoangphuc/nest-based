@@ -11,4 +11,12 @@ export class UsersInfoResponseDto extends PublicUserInfoResponseDto {
     description: 'Id of user in db',
   })
   id: string;
+
+  @Expose()
+  @ApiProperty({
+    type: String,
+    description: 'Eth address linked of user',
+    example: '0x123',
+  })
+  ethAddress: string;
 }

@@ -14,6 +14,8 @@ import {
 import { RegisterRequestDto } from '../auth/dto/register-request.dto';
 import { UsersRole } from '../../shares/enums/users-role.enum';
 import { UpdatePasswordRequestDto } from '../auth/dto/update-password-request.dto';
+import { LinkAddressRequestDto } from './dto/link-address-request.dto';
+import { use } from 'passport';
 
 @Injectable()
 export class UsersService {
@@ -92,5 +94,22 @@ export class UsersService {
       throw new UserNotFoundException({ email, password });
     }
     return usersMatchedPass.length === 0 ? null : usersMatchedPass[0];
+  }
+
+  async linkAddress(
+    email: string,
+    linkAddressRequest: LinkAddressRequestDto,
+    session: ClientSession,
+    throwException = false,
+  ): Promise<UsersDocument> {
+    const user = await this.usersModel.findOneAndUpdate(
+      {
+        email,
+      },
+      { ethAddress: linkAddressRequest.ethAddress },
+      { session, new: true },
+    );
+    if (isNullOrUndefined(user) && throwException === true) throw new UserNotFoundException({ email });
+    return isNullOrUndefined(user) ? user : user.toObject();
   }
 }
