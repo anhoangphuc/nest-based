@@ -1,9 +1,9 @@
-import { DynamicModule, Global, Module } from '@nestjs/common';
+import { CacheModule, DynamicModule, Global, Module } from '@nestjs/common';
 import { IConfigOption } from '../../shares/interfaces/config/config-option.interface';
 import { CONFIG_OPTIONS } from '../../shares/constants/constant';
 import { ConfigService } from './config.service';
 import { JwtModule } from '@nestjs/jwt';
-import { UsersModule } from '../users/users.module';
+import redisStore from 'cache-manager-redis-store';
 
 @Global()
 @Module({})
@@ -27,6 +27,11 @@ export class CoreModule {
             },
           }),
           inject: [ConfigService],
+        }),
+        CacheModule.register({
+          store: redisStore,
+          host: '127.0.0.1',
+          port: 6379,
         }),
       ],
       exports: [ConfigService, JwtModule],
