@@ -1,21 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '../core/config.service';
+import { TypedDataField } from 'ethers';
 
 @Injectable()
 export class SignatureComponentService {
   constructor(private readonly configService: ConfigService) {}
 
-  async getEthLinkAddressDomain(chainId: number) {
+  getEthLinkAddressDomain(chainId: number) {
     return {
       name: this.configService.getAppName(),
       chainId,
     };
   }
 
-  async getEthLinkAddressTypedAndValue() {
+  getEthLinkAddressTypedAndValue(): [Record<string, TypedDataField[]>, Record<string, any>] {
     const types = {
       Request: [{ name: 'request', type: 'string' }],
-    };
+    } as Record<string, TypedDataField[]>;
 
     const values = {
       request: 'link_address',
