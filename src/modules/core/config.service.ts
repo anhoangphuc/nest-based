@@ -58,6 +58,10 @@ export class ConfigService {
     return process.env.APP_ENV;
   }
 
+  getAppName(): string {
+    return process.env.APP_NAME;
+  }
+
   getLoggerConfiguration(): ILoggerConfiguration {
     return this.configuration.logger;
   }

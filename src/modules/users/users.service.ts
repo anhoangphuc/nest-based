@@ -15,10 +15,14 @@ import { RegisterRequestDto } from '../auth/dto/register-request.dto';
 import { UsersRole } from '../../shares/enums/users-role.enum';
 import { UpdatePasswordRequestDto } from '../auth/dto/update-password-request.dto';
 import { LinkAddressRequestDto } from './dto/link-address-request.dto';
+import { EthSignatureService } from '../account-signature/eth-signature.service';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(Users.name) private usersModel: Model<UsersDocument>) {}
+  constructor(
+    @InjectModel(Users.name) private usersModel: Model<UsersDocument>,
+    private readonly ethSignatureService: EthSignatureService,
+  ) {}
 
   async addNewUser(registerRequestDto: RegisterRequestDto, session: ClientSession): Promise<UsersDocument> {
     const user = await this.usersModel.findOne({ email: registerRequestDto.email });
@@ -100,11 +104,15 @@ export class UsersService {
     session: ClientSession,
     throwException = false,
   ): Promise<UsersDocument> {
+    const ethAddress = await this.ethSignatureService.verifyEthLinkAddressSignature(
+      linkAddressRequest.chainId,
+      linkAddressRequest.signature,
+    );
     const user = await this.usersModel.findOneAndUpdate(
       {
         email,
       },
-      { ethAddress: linkAddressRequest.ethAddress },
+      { ethAddress: ethAddress },
       { session, new: true },
     );
     if (isNullOrUndefined(user) && throwException === true) throw new UserNotFoundException({ email });

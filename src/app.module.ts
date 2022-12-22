@@ -10,6 +10,7 @@ import { WinstonModule } from 'nest-winston';
 import winston from 'winston';
 import { createTransports, enumerateErrorFormat, timestamp } from './shares/helpers/logger';
 import { AppLoggerMiddleware } from './middlewares/app-logger.middleware';
+import { AccountSignatureModule } from './modules/account-signature/account-signature.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { AppLoggerMiddleware } from './middlewares/app-logger.middleware';
       useFactory: async (configService: ConfigService) => {
         const transports = createTransports(
           configService.getLoggerConfiguration().useFile,
+          configService.getAppName(),
           configService.getEnvironment(),
         );
         return {
@@ -38,6 +40,7 @@ import { AppLoggerMiddleware } from './middlewares/app-logger.middleware';
       inject: [ConfigService],
     }),
     UsersModule,
+    AccountSignatureModule,
   ],
   controllers: [AppController],
   providers: [AppService],
