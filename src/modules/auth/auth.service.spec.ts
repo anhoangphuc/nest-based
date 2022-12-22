@@ -2,7 +2,6 @@ import { AuthService } from './auth.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '../core/config.service';
 import { CoreModule } from '../core/core.module';
 import { UsersModule } from '../users/users.module';
