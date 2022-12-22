@@ -2,8 +2,7 @@ import { EthSignatureService } from './eth-signature.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SignatureComponentService } from './signature-component.service';
 import { CoreModule } from '../core/core.module';
-import { ethers, TypedDataField } from 'ethers';
-import { sign } from 'crypto';
+import { ethers } from 'ethers';
 
 describe(`EthService`, () => {
   let service: EthSignatureService;
