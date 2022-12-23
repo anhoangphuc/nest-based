@@ -30,14 +30,15 @@ export class AuthService {
   }
 
   async register(registerRequest: RegisterRequestDto) {
-    const user = await this.usersService.addNewUserWithNewTransaction(registerRequest);
     const payload = { email: registerRequest.email };
+    const verifyToken = this.jwtService.sign(payload, {
+      secret: this.configService.getAuthConfiguration().verifyToken.secretKey,
+      expiresIn: this.configService.getAuthConfiguration().verifyToken.expireTime,
+    });
+    const user = await this.usersService.addNewUserWithNewTransaction(registerRequest);
     return {
       ...user,
-      verifyToken: this.jwtService.sign(payload, {
-        secret: this.configService.getAuthConfiguration().verifyToken.secretKey,
-        expiresIn: this.configService.getAuthConfiguration().verifyToken.expireTime,
-      }),
+      verifyToken,
     };
   }
 
