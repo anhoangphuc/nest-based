@@ -4,6 +4,7 @@ import { CONFIG_OPTIONS } from '../../shares/constants/constant';
 import { ConfigService } from './config.service';
 import { JwtModule } from '@nestjs/jwt';
 import redisStore from 'cache-manager-redis-store';
+import { CacheService } from './cache.service';
 
 @Global()
 @Module({})
@@ -17,6 +18,7 @@ export class CoreModule {
           useValue: options,
         },
         ConfigService,
+        CacheService,
       ],
       imports: [
         JwtModule.registerAsync({
@@ -37,7 +39,7 @@ export class CoreModule {
           inject: [ConfigService],
         }),
       ],
-      exports: [ConfigService, JwtModule, CacheModule],
+      exports: [ConfigService, JwtModule, CacheModule, CacheService],
     };
   }
 }
