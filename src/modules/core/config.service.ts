@@ -10,6 +10,7 @@ import { isNullOrUndefined, isSomeValueNullOrUndefined } from '../../shares/help
 import { RequiredConfigurationNotFoundError } from '../../shares/exceptions/config.exception';
 import { IMongoConfiguration } from '../../shares/interfaces/config/mongodb-configuration.interface';
 import { ILoggerConfiguration } from '../../shares/interfaces/config/logger-configuration.interface';
+import { IRedisConfiguration } from '../../shares/interfaces/config/redis-configuration.interface';
 dotenv.config();
 
 @Injectable()
@@ -64,5 +65,9 @@ export class ConfigService {
 
   getLoggerConfiguration(): ILoggerConfiguration {
     return this.configuration.logger;
+  }
+
+  getRedisConfiguration(): IRedisConfiguration {
+    return this.configuration.redis;
   }
 }
