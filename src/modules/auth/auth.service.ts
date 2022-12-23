@@ -60,6 +60,10 @@ export class AuthService {
       this.logger.error(e);
       throw new VerifyTokenNotValidException();
     }
+    const savedVerifyToken = await this.cacheManger.get(this.cacheService.getVerifyTokenKey(decodedData.email));
+    if (savedVerifyToken !== token) {
+      throw new VerifyTokenNotValidException(`Verify token not latest`);
+    }
     return await this.usersService.activateUser(decodedData.email, null);
   }
 
