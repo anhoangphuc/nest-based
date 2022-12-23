@@ -28,13 +28,16 @@ export class CoreModule {
           }),
           inject: [ConfigService],
         }),
-        CacheModule.register({
-          store: redisStore,
-          host: '127.0.0.1',
-          port: 6379,
+        CacheModule.registerAsync({
+          useFactory: async (configService: ConfigService) => ({
+            store: redisStore,
+            host: configService.getRedisConfiguration().host,
+            port: configService.getRedisConfiguration().port,
+          }),
+          inject: [ConfigService],
         }),
       ],
-      exports: [ConfigService, JwtModule],
+      exports: [ConfigService, JwtModule, CacheModule],
     };
   }
 }
