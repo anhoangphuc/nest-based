@@ -30,14 +30,16 @@ export class CoreModule {
           }),
           inject: [ConfigService],
         }),
-        CacheModule.registerAsync({
-          useFactory: async (configService: ConfigService) => ({
-            store: redisStore,
-            host: configService.getRedisConfiguration().host,
-            port: configService.getRedisConfiguration().port,
-          }),
-          inject: [ConfigService],
-        }),
+        process.env.CACHE_REDIS === 'true'
+          ? CacheModule.registerAsync({
+              useFactory: async (configService: ConfigService) => ({
+                store: redisStore,
+                host: configService.getRedisConfiguration().host,
+                port: configService.getRedisConfiguration().port,
+              }),
+              inject: [ConfigService],
+            })
+          : CacheModule.register(),
       ],
       exports: [ConfigService, JwtModule, CacheModule, CacheService],
     };
