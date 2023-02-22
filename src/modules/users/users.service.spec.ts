@@ -1,6 +1,6 @@
 import { UsersService } from './users.service';
 import { Test, TestingModule } from '@nestjs/testing';
-import { randomEmail, randomPassword, rootMongooseTestModule } from '../../shares/helpers/setup-test';
+import { randomEmail, randomPassword, rootMongooseTestModule, startRedisServer } from '../../shares/helpers/setup-test';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Users, UsersSchema } from './schema/users.schema';
 import { isHashEqual } from '../../shares/helpers/cryptography';
@@ -17,6 +17,9 @@ describe('UsersService', () => {
     imports: [CoreModule.register({ folder: './configuration' })],
     exports: [EthSignatureService],
   };
+  beforeAll(async () => {
+    await startRedisServer();
+  });
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [

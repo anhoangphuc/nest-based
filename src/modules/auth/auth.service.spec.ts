@@ -5,7 +5,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { ConfigService } from '../core/config.service';
 import { CoreModule } from '../core/core.module';
 import { UsersModule } from '../users/users.module';
-import { randomEmail, randomPassword, rootMongooseTestModule } from '../../shares/helpers/setup-test';
+import { randomEmail, randomPassword, rootMongooseTestModule, startRedisServer } from '../../shares/helpers/setup-test';
 import { UsersService } from '../users/users.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Users, UsersSchema } from '../users/schema/users.schema';
@@ -26,6 +26,9 @@ describe(`AuthService`, () => {
     exports: [UsersService],
   };
 
+  beforeAll(async () => {
+    await startRedisServer();
+  });
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
