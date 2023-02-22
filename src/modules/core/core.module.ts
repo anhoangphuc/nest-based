@@ -5,6 +5,9 @@ import { ConfigService } from './config.service';
 import { JwtModule } from '@nestjs/jwt';
 import redisStore from 'cache-manager-redis-store';
 import { CacheService } from './cache.service';
+import { WinstonModule } from 'nest-winston';
+import { createTransports, enumerateErrorFormat, timestamp } from '../../shares/helpers/logger';
+import winston from 'winston';
 
 @Global()
 @Module({})
@@ -40,6 +43,21 @@ export class CoreModule {
               inject: [ConfigService],
             })
           : CacheModule.register(),
+        WinstonModule.forRootAsync({
+          useFactory: async (configService: ConfigService) => {
+            const transports = createTransports(
+              configService.getLoggerConfiguration().useFile,
+              configService.getAppName(),
+              configService.getEnvironment(),
+            );
+            return {
+              level: 'info',
+              format: winston.format.combine(timestamp(), enumerateErrorFormat()),
+              transports,
+            };
+          },
+          inject: [ConfigService],
+        }),
       ],
       exports: [ConfigService, JwtModule, CacheModule, CacheService],
     };
