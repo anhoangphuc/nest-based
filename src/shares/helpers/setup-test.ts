@@ -1,5 +1,6 @@
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { MongooseModule, MongooseModuleOptions } from '@nestjs/mongoose';
+import RedisMemoryServer from 'redis-memory-server';
 
 let mongod: MongoMemoryReplSet;
 export const rootMongooseTestModule = (options: MongooseModuleOptions = {}) =>
@@ -18,6 +19,17 @@ export const closeMongodConnection = async () => {
     await mongod.stop();
   }
 };
+
+export async function startRedisServer() {
+  try {
+    const redisServer = new RedisMemoryServer({ instance: { ip: '127.0.0.1', port: 6379 } });
+    await redisServer.start();
+  } catch (e) {
+    // If port 6379 is already start, means redis started
+    if (e.toString().includes('Port 6379 already in use')) return;
+    throw e;
+  }
+}
 
 export function randomString(length: number, withNumber: boolean): string {
   const s = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';

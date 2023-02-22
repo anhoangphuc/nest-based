@@ -1,4 +1,4 @@
-import { Inject, Injectable, LoggerService } from '@nestjs/common';
+import { CACHE_MANAGER, Inject, Injectable, LoggerService } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { UsersDocument } from '../users/schema/users.schema';
@@ -8,6 +8,8 @@ import { PublicUserInfoResponseDto } from '../users/dto/public-user-info.respons
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { VerifyTokenNotValidException } from '../../shares/exceptions/auth.exception';
 import { UpdatePasswordRequestDto } from './dto/update-password-request.dto';
+import { Cache } from 'cache-manager';
+import { CacheService } from '../core/cache.service';
 
 @Injectable()
 export class AuthService {
@@ -15,7 +17,9 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly usersService: UsersService,
     private readonly configService: ConfigService,
+    private readonly cacheService: CacheService,
     @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: LoggerService,
+    @Inject(CACHE_MANAGER) private readonly cacheManger: Cache,
   ) {}
   async validateUserWithEmailAndPassword(email: string, password: string): Promise<UsersDocument> {
     return await this.usersService.getUserWithEmailAndPassword(email, password);
@@ -30,14 +34,19 @@ export class AuthService {
   }
 
   async register(registerRequest: RegisterRequestDto) {
-    const user = await this.usersService.addNewUserWithNewTransaction(registerRequest);
     const payload = { email: registerRequest.email };
+    const verifyToken = this.jwtService.sign(payload, {
+      secret: this.configService.getAuthConfiguration().verifyToken.secretKey,
+      expiresIn: this.configService.getAuthConfiguration().verifyToken.expireTime,
+    });
+    // ttl is larger than expireTime, in case token verified on time but not found in cache
+    const ttl = this.configService.getAuthConfiguration().verifyToken.expireTime + 100;
+    await this.cacheManger.set(this.cacheService.getVerifyTokenKey(registerRequest.email), verifyToken, ttl);
+    //Insert user in the end of the flow, in case one of the above error
+    const user = await this.usersService.addNewUserWithNewTransaction(registerRequest);
     return {
       ...user,
-      verifyToken: this.jwtService.sign(payload, {
-        secret: this.configService.getAuthConfiguration().verifyToken.secretKey,
-        expiresIn: this.configService.getAuthConfiguration().verifyToken.expireTime,
-      }),
+      verifyToken,
     };
   }
 
@@ -50,6 +59,10 @@ export class AuthService {
     } catch (e) {
       this.logger.error(e);
       throw new VerifyTokenNotValidException();
+    }
+    const savedVerifyToken = await this.cacheManger.get(this.cacheService.getVerifyTokenKey(decodedData.email));
+    if (savedVerifyToken !== token) {
+      throw new VerifyTokenNotValidException(`Verify token not latest`);
     }
     return await this.usersService.activateUser(decodedData.email, null);
   }
