@@ -5,12 +5,25 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Users, UsersSchema } from './schema/users.schema';
 import { isHashEqual } from '../../shares/helpers/cryptography';
 import { RegisterRequestDto } from '../auth/dto/register-request.dto';
+import { AccountSignatureModule } from '../account-signature/account-signature.module';
+import { DynamicModule } from '@nestjs/common';
+import { CoreModule } from '../core/core.module';
+import { EthSignatureService } from '../account-signature/eth-signature.service';
 
 describe('UsersService', () => {
   let service: UsersService;
+  const AccountSignatureModuleTest: DynamicModule = {
+    module: AccountSignatureModule,
+    imports: [CoreModule.register({ folder: './configuration' })],
+    exports: [EthSignatureService],
+  };
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
-      imports: [rootMongooseTestModule(), MongooseModule.forFeature([{ name: Users.name, schema: UsersSchema }])],
+      imports: [
+        rootMongooseTestModule(),
+        MongooseModule.forFeature([{ name: Users.name, schema: UsersSchema }]),
+        AccountSignatureModuleTest,
+      ],
       providers: [UsersService],
     }).compile();
     service = moduleRef.get<UsersService>(UsersService);
